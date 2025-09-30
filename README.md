@@ -22,8 +22,8 @@ docker-compose up -d
 ### Edição em tempo real:
 O plugin está montado como volume, então você pode editar os arquivos diretamente:
 - `index.php` - Plugin principal
-- `associados.css` - Estilos
-- `autocomplete.js` - JavaScript do autocomplete
+- `styles.css` - Estilos
+- `script.js` - JavaScript do autocomplete
 
 As mudanças são refletidas imediatamente no WordPress (apenas recarregue a página).
 
@@ -47,8 +47,8 @@ Para criar um arquivo ZIP do plugin (pronto para instalar em qualquer WordPress)
 
 Isso vai gerar o arquivo `associados-interativo.zip` contendo apenas os arquivos necessários:
 - ✅ `index.php`
-- ✅ `associados.css`
-- ✅ `autocomplete.js`
+- ✅ `styles.css`
+- ✅ `script.js`
 - ✅ `placeholder.png` (se existir)
 
 **Arquivos ignorados no ZIP:**

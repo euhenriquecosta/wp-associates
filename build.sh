@@ -23,8 +23,8 @@ echo "📦 Copiando arquivos do plugin..."
 
 # Copiar apenas os arquivos necessários
 cp index.php ${BUILD_DIR}/${PLUGIN_NAME}/
-cp associados.css ${BUILD_DIR}/${PLUGIN_NAME}/
-cp autocomplete.js ${BUILD_DIR}/${PLUGIN_NAME}/
+cp styles.css ${BUILD_DIR}/${PLUGIN_NAME}/
+cp script.js ${BUILD_DIR}/${PLUGIN_NAME}/
 
 # Se tiver imagem placeholder, copiar também
 if [ -f "placeholder.png" ]; then
