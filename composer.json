@@ -3,7 +3,7 @@
   "description": "Plugin para registrar associados com mapa interativo",
   "type": "wordpress-plugin",
   "require": {
-    "php": ">=7.4"
+    "php": ">=8.1"
   },
   "scripts": {
     "build": "bin/build.sh",
