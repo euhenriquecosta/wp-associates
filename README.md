@@ -42,7 +42,7 @@ docker-compose down -v
 Para criar um arquivo ZIP do plugin (pronto para instalar em qualquer WordPress):
 
 ```bash
-./build-plugin.sh
+./build
 ```
 
 Isso vai gerar o arquivo `associados-interativo.zip` contendo apenas os arquivos necessários:

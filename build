@@ -3,8 +3,8 @@
 # Script para criar ZIP do plugin WordPress
 # Ignora arquivos de desenvolvimento
 
-PLUGIN_NAME="wp-associates"
-BUILD_DIR="build"
+PLUGIN_NAME="associados-interativo"
+BUILD_DIR=".build"
 OUTPUT_FILE="${PLUGIN_NAME}.zip"
 
 echo "🚀 Iniciando build do plugin ${PLUGIN_NAME}..."

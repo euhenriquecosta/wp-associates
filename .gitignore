@@ -2,5 +2,5 @@
 .env
 /vendor/
 composer.lock
-/build/
+/.build/
 *.zip
