@@ -1,0 +1,11 @@
+{
+  "name": "associados/plugin",
+  "description": "Plugin para registrar associados com mapa interativo",
+  "type": "wordpress-plugin",
+  "require": {
+    "php": ">=7.4"
+  },
+  "require-dev": {
+    "php-stubs/wordpress-stubs": "^6.0"
+  }
+}
