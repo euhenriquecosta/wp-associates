@@ -136,8 +136,8 @@ function ai_enqueue_scripts() {
     wp_enqueue_script('leaflet-js', 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js', array(), '1.9.4', true);
 
     // Usar filemtime para versionar e evitar cache
-    $css_version = filemtime(plugin_dir_path(__FILE__) . 'associados.css');
-    wp_register_style('associados-css', plugin_dir_url(__FILE__) . 'associados.css', array(), $css_version);
+    $css_version = filemtime(plugin_dir_path(__FILE__) . 'styles.css');
+    wp_register_style('associados-css', plugin_dir_url(__FILE__) . 'styles.css', array(), $css_version);
     wp_enqueue_style('associados-css');
 }
 add_action('wp_enqueue_scripts', 'ai_enqueue_scripts');
@@ -150,8 +150,8 @@ function ai_admin_enqueue($hook) {
     global $post;
     if (($hook == 'post-new.php' || $hook == 'post.php') && get_post_type($post) === 'associado') {
         // Usar filemtime para versionar e evitar cache
-        $js_version = filemtime(plugin_dir_path(__FILE__) . 'autocomplete.js');
-        wp_enqueue_script('ai-autocomplete', plugin_dir_url(__FILE__).'autocomplete.js', array('jquery'), $js_version, true);
+        $js_version = filemtime(plugin_dir_path(__FILE__) . 'script.js');
+        wp_enqueue_script('ai-autocomplete', plugin_dir_url(__FILE__).'script.js', array('jquery'), $js_version, true);
     }
 }
 add_action('admin_enqueue_scripts', 'ai_admin_enqueue');

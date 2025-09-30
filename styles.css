@@ -1,0 +1,232 @@
+/* associados.css - estilo principal inspirado nas telas enviadas */
+
+/* filtros */
+.associados-filtros {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 18px;
+    align-items: center;
+}
+.associados-filtros input[type="text"],
+.associados-filtros select {
+    padding: 10px 12px;
+    border-radius: 6px;
+    border: 1px solid #dcdcdc;
+    font-size: 14px;
+    min-width: 160px;
+    flex: 1 1 160px;
+}
+.associados-filtros button {
+    background: red;
+    color: white;
+    padding: 10px 14px;
+    border-radius: 6px;
+    border: 0;
+    cursor: pointer;
+    font-weight: 600;
+    white-space: nowrap;
+}
+.associados-filtros button:hover { opacity:0.95; }
+
+/* pai - lista e mapa lado a lado */
+.ai-div-pai {
+    display: flex;
+    gap: 30px;
+    align-items: flex-start;
+    width: 100%;
+}
+
+/* container lista */
+.associados-list {
+    width: 400px;
+    max-width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* card do associado (estilo semelhante ao que enviou) */
+.associado {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+    padding: 12px;
+    transition: transform 0.15s, box-shadow 0.15s;
+    cursor: pointer;
+    overflow: hidden;
+}
+.associado:hover {
+    transform: translateY(-6px);
+    box-shadow:0 12px 30px rgba(0,0,0,0.09);
+}
+
+/* mini-thumb circular */
+.associado-thumb {
+    width: 84px;
+    height: 84px;
+    overflow: hidden;
+    border-radius: 10px;
+    margin-bottom: 8px;
+}
+.associado-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    border-radius: 8px;
+}
+
+/* textos do card */
+.associado h3 { margin: 6px 0 2px; font-size:16px; }
+.associado .ai-funcao { font-size: 12px; color:#777; margin: 0 0 4px;}
+.associado .ai-local { font-size: 12px; color:#9aa; margin: 0; }
+
+/* icone de marker (divicon) */
+.ai-marker-wrapper { /* classe do divIcon container (Leaflet) */
+    background: transparent;
+}
+.ai-marker-icon {
+    width:56px;
+    height:56px;
+    border-radius:100px;
+    overflow:hidden;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    box-shadow:0 6px 12px rgba(0,0,0,0.2);
+    border:4px solid white;
+}
+.ai-marker-icon img {
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+}
+
+/* popup estilo */
+.ai-popup { text-align:center; width:220px; }
+.ai-popup img { width:80px; height:80px; object-fit:cover; border-radius:8px; display:block; margin:6px auto; }
+.ai-popup h4 { margin:6px 0 4px; font-size:15px; }
+.ai-popup .ai-popup-funcao { font-size:12px; color:#555; margin-bottom:4px; }
+.ai-popup .ai-popup-local { font-size:12px; color:#888; }
+
+/* fallback sem imagem */
+.ai-noimg {
+    width:56px;height:56px;border-radius:28px;display:flex;align-items:center;justify-content:center;background:#eee;color:#777;font-weight:700;
+}
+
+
+#map {
+    flex: 1;
+    width: 100%;
+    height: 350px;
+    border-radius: 12px;
+    min-height: 300px;
+}
+
+/* ========================================
+   MEDIA QUERIES - RESPONSIVIDADE
+   ======================================== */
+
+/* Tablets e telas menores que 1024px */
+@media (max-width: 1024px) {
+    .ai-div-pai {
+        flex-direction: column;
+    }
+    
+    .associados-list {
+        width: 100%;
+    }
+    
+    #map {
+        width: 100%;
+        height: 300px;
+    }
+}
+
+/* Mobile - telas menores que 768px */
+@media (max-width: 768px) {
+    .associados-filtros {
+        gap: 8px;
+    }
+    
+    .associados-filtros input[type="text"],
+    .associados-filtros select {
+        min-width: 120px;
+        flex: 1 1 calc(50% - 4px);
+    }
+    
+    .associados-filtros button {
+        flex: 1 1 100%;
+        width: 100%;
+    }
+    
+    .ai-div-pai {
+        gap: 20px;
+    }
+    
+    #map {
+        height: 400px;
+    }
+    
+    .associado {
+        padding: 10px;
+    }
+    
+    .associado h3 {
+        font-size: 15px;
+    }
+    
+    .associado .ai-funcao {
+        font-size: 12px;
+    }
+    
+    .associado .ai-local {
+        font-size: 11px;
+    }
+}
+
+/* Mobile pequeno - telas menores que 480px */
+@media (max-width: 480px) {
+    .associados-filtros {
+        gap: 6px;
+    }
+    
+    .associados-filtros input[type="text"],
+    .associados-filtros select {
+        padding: 8px 10px;
+        font-size: 12px;
+        min-width: 100%;
+        flex: 1 1 100%;
+    }
+    
+    .associados-filtros button {
+        padding: 8px 12px;
+        font-size: 12px;
+        width: 100%;
+    }
+    
+    .associados-list {
+        gap: 12px;
+    }
+    
+    .associado-thumb {
+        width: 70px;
+        height: 70px;
+    }
+    
+    #map {
+        height: 350px;
+        border-radius: 8px;
+    }
+    
+    .ai-popup {
+        width: 180px;
+    }
+    
+    .ai-popup img {
+        width: 60px;
+        height: 60px;
+    }
+}
