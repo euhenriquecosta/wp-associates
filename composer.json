@@ -5,6 +5,9 @@
   "require": {
     "php": ">=8.1"
   },
+  "config": {
+    "process-timeout": 0
+  },
   "scripts": {
     "build": "bin/build.sh",
     "dev": "bin/dev.sh",

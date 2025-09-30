@@ -41,9 +41,19 @@
 .associados-list {
     width: 400px;
     max-width: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
+    height: 350px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    display: block;
+    padding-right: 8px;
+}
+
+.associados-list > .associado {
+    margin-bottom: 16px;
+}
+
+.associados-list > .associado:last-child {
+    margin-bottom: 0;
 }
 
 /* card do associado (estilo semelhante ao que enviou) */
@@ -137,6 +147,7 @@
     
     .associados-list {
         width: 100%;
+        height: 500px;
     }
     
     #map {
@@ -164,6 +175,10 @@
     
     .associados-div-pai {
         gap: 20px;
+    }
+    
+    .associados-list {
+        height: 400px;
     }
     
     #map {
@@ -208,7 +223,11 @@
     }
     
     .associados-list {
-        gap: 12px;
+        height: 350px;
+    }
+    
+    .associados-list > .associado {
+        margin-bottom: 12px;
     }
     
     .associado-thumb {
