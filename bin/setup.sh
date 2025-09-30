@@ -74,6 +74,9 @@ docker exec wordpress wp user meta update 1 metaboxhidden_dashboard '["dashboard
 # Desabilitar widget de boas-vindas
 docker exec wordpress wp user meta update 1 show_welcome_panel 0 --allow-root 2>/dev/null
 
+# Definir esquema de cores Midnight
+docker exec wordpress wp user meta update 1 admin_color midnight --allow-root 2>/dev/null
+
 echo ""
 echo "Configuração concluída!"
 echo ""
