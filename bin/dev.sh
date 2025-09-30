@@ -3,9 +3,9 @@
 # Função para parar containers ao sair
 cleanup() {
     echo ""
-    echo "🛑 Parando containers..."
+    echo "🛑 Parando WordPress..."
     docker-compose down -v 2>/dev/null
-    echo "✅ Containers parados!"
+    echo "✅ Wordpress parado!"
     exit 0
 }
 
@@ -30,8 +30,8 @@ echo ""
 echo "💡 Depois, ative manualmente o plugin 'WP Associates'"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
-echo "📊 Logs do WordPress (Ctrl+C para parar):"
+echo "⌨️  Pressione Ctrl+C para parar o WordPress"
 echo ""
 
-# Seguir logs apenas do WordPress
-docker-compose logs -f wordpress
+# Manter script rodando até Ctrl+C
+tail -f /dev/null
