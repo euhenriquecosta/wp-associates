@@ -66,6 +66,14 @@ docker exec wordpress wp theme install hello-elementor --activate --allow-root 2
 # Deletar temas padrão não utilizados
 docker exec wordpress wp theme delete twentytwentyone twentytwentytwo twentytwentythree twentytwentyfour --allow-root 2>/dev/null
 
+echo "> Configurando dashboard..."
+
+# Desabilitar widgets do dashboard para usuário admin
+docker exec wordpress wp user meta update 1 metaboxhidden_dashboard '["dashboard_site_health","dashboard_right_now","dashboard_activity","dashboard_quick_press","dashboard_primary","e-dashboard-overview","rpress_dashboard_sales"]' --format=json --allow-root 2>/dev/null
+
+# Desabilitar widget de boas-vindas
+docker exec wordpress wp user meta update 1 show_welcome_panel 0 --allow-root 2>/dev/null
+
 echo ""
 echo "Configuração concluída!"
 echo ""
