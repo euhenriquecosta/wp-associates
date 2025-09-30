@@ -1,4 +1,4 @@
-# Plugin Associados Interativo - WordPress
+# Plugin WP Associates - WordPress
 
 Plugin para registrar associados com mapa interativo usando Leaflet.
 
@@ -6,18 +6,32 @@ Plugin para registrar associados com mapa interativo usando Leaflet.
 
 ### Iniciar o ambiente:
 ```bash
-docker-compose up -d
+composer dev
 ```
 
-### Acessar o WordPress:
-- URL: http://localhost:8080
-- Admin: http://localhost:8080/wp-admin
-- Usuário: admin
-- Senha: admin123
+### Primeira configuração (apenas 1x):
+1. Acesse: http://localhost:8080
+2. Configure o WordPress:
+   - **Título:** WP Associates
+   - **Usuário:** admin
+   - **Senha:** admin
+   - **Email:** admin@email.com
+3. Vá em Plugins e ative **"WP Associates"**
 
-### Ativar o plugin:
-- Vá em Plugins no admin do WordPress
-- Ative o plugin "Associados Interativo"
+### Acessos:
+- **URL:** http://localhost:8080
+- **Admin:** http://localhost:8080/wp-admin
+- **Usuário:** admin
+- **Senha:** admin
+
+### Outros comandos:
+```bash
+composer start   # Iniciar containers
+composer stop    # Parar containers  
+composer restart # Reiniciar containers
+composer logs    # Ver logs do WordPress
+composer build   # Gerar ZIP do plugin
+```
 
 ### Edição em tempo real:
 O plugin está montado como volume, então você pode editar os arquivos diretamente:
@@ -42,7 +56,7 @@ docker-compose down -v
 Para criar um arquivo ZIP do plugin (pronto para instalar em qualquer WordPress):
 
 ```bash
-bin/build.sh
+composer build
 ```
 
 Isso vai gerar o arquivo `associados-interativo.zip` contendo apenas os arquivos necessários:
@@ -72,5 +86,5 @@ Isso vai gerar o arquivo `associados-interativo.zip` contendo apenas os arquivos
    - Estado
    - Imagem destacada
    - Categorias
-4. Crie uma página e adicione o shortcode: `[associados_interativo]`
+4. Crie uma página e adicione o shortcode: `[wp-associates]`
 5. Visualize a página para ver o mapa interativo!

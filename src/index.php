@@ -1,9 +1,9 @@
 <?php
 /**
- * Plugin Name: Associados Interativo
+ * Plugin Name: WP Associates
  * Description: Plugin para registrar associados com nome, localização, imagem e filtros interativos com mapa.
- * Version: 2.1
- * Author: Seu Nome
+ * Version: 2.3
+ * Author: Henrique Costa
  */
 
 if (!defined('ABSPATH')) exit;
@@ -388,4 +388,4 @@ function associados_associados_shortcode($atts) {
     <?php
     return ob_get_clean();
 }
-add_shortcode('associados_interativo', 'associados_associados_shortcode');
+add_shortcode('wp-associates', 'associados_associados_shortcode');
