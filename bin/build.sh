@@ -7,7 +7,7 @@
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
 
-PLUGIN_NAME="associados-interativo"
+PLUGIN_NAME="wp-associates"
 BUILD_DIR="${PROJECT_DIR}/.build"
 OUTPUT_FILE="${PROJECT_DIR}/${PLUGIN_NAME}.zip"
 
