@@ -139,12 +139,6 @@ function ai_enqueue_scripts() {
     $css_version = filemtime(plugin_dir_path(__FILE__) . 'associados.css');
     wp_register_style('associados-css', plugin_dir_url(__FILE__) . 'associados.css', array(), $css_version);
     wp_enqueue_style('associados-css');
-
-    $inline = "
-    .ai-div-pai { display:flex; gap:30px; align-items:flex-start; }
-    @media(max-width:1000px){ .ai-div-pai { display:block; } #map { height:400px !important; } }
-    ";
-    wp_add_inline_style('associados-css', $inline);
 }
 add_action('wp_enqueue_scripts', 'ai_enqueue_scripts');
 
