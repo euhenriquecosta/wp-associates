@@ -42,10 +42,16 @@ echo "> Instalando Elementor..."
 # Instalar e ativar Elementor
 docker exec wordpress wp plugin install elementor --activate --allow-root 2>/dev/null
 
+# Pular wizard do Elementor
+docker exec wordpress wp option update elementor_onboarded 1 --allow-root 2>/dev/null
+
 echo "> Instalando Elementor Pro..."
 
 # Instalar e ativar Elementor Pro
 docker exec wordpress wp plugin install https://github.com/proelements/proelements/releases/download/v3.31.3/pro-elements.zip --activate --allow-root 2>/dev/null
+
+# Pular wizard do Elementor Pro
+docker exec wordpress wp option update elementor_pro_license_data '{"license_key":"activated"}' --format=json --allow-root 2>/dev/null
 
 echo "> Ativando plugin WP Associates..."
 
