@@ -1,10 +1,10 @@
 jQuery(document).ready(function ($) {
-    let $search = $('#ai_search_place');
-    let $hiddenLocal = $('#ai_local');
-    let $lat = $('#ai_lat');
-    let $lng = $('#ai_lng');
+    let $search = $('#associados_search_place');
+    let $hiddenLocal = $('#associados_local');
+    let $lat = $('#associados_lat');
+    let $lng = $('#associados_lng');
 
-    let $suggestions = $('<div id="ai_suggestions" style="border:1px solid #ccc; background:#fff; position:absolute; z-index:9999; max-height:200px; overflow:auto; width:100%"></div>').insertAfter($search).hide();
+    let $suggestions = $('<div id="associados_suggestions" style="border:1px solid #ccc; background:#fff; position:absolute; z-index:9999; max-height:200px; overflow:auto; width:100%"></div>').insertAfter($search).hide();
 
     let debounceTimer = null;
 

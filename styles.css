@@ -30,7 +30,7 @@
 .associados-filtros button:hover { opacity:0.95; }
 
 /* pai - lista e mapa lado a lado */
-.ai-div-pai {
+.associados-div-pai {
     display: flex;
     gap: 30px;
     align-items: flex-start;
@@ -79,14 +79,14 @@
 
 /* textos do card */
 .associado h3 { margin: 6px 0 2px; font-size:16px; }
-.associado .ai-funcao { font-size: 12px; color:#777; margin: 0 0 4px;}
-.associado .ai-local { font-size: 12px; color:#9aa; margin: 0; }
+.associado .associados-funcao { font-size: 12px; color:#777; margin: 0 0 4px;}
+.associado .associados-local { font-size: 12px; color:#9aa; margin: 0; }
 
 /* icone de marker (divicon) */
-.ai-marker-wrapper { /* classe do divIcon container (Leaflet) */
+.associados-marker-wrapper { /* classe do divIcon container (Leaflet) */
     background: transparent;
 }
-.ai-marker-icon {
+.associados-marker-icon {
     width:56px;
     height:56px;
     border-radius:100px;
@@ -97,7 +97,7 @@
     box-shadow:0 6px 12px rgba(0,0,0,0.2);
     border:4px solid white;
 }
-.ai-marker-icon img {
+.associados-marker-icon img {
     width:100%;
     height:100%;
     object-fit:cover;
@@ -105,14 +105,14 @@
 }
 
 /* popup estilo */
-.ai-popup { text-align:center; width:220px; }
-.ai-popup img { width:80px; height:80px; object-fit:cover; border-radius:8px; display:block; margin:6px auto; }
-.ai-popup h4 { margin:6px 0 4px; font-size:15px; }
-.ai-popup .ai-popup-funcao { font-size:12px; color:#555; margin-bottom:4px; }
-.ai-popup .ai-popup-local { font-size:12px; color:#888; }
+.associados-popup { text-align:center; width:220px; }
+.associados-popup img { width:80px; height:80px; object-fit:cover; border-radius:8px; display:block; margin:6px auto; }
+.associados-popup h4 { margin:6px 0 4px; font-size:15px; }
+.associados-popup .associados-popup-funcao { font-size:12px; color:#555; margin-bottom:4px; }
+.associados-popup .associados-popup-local { font-size:12px; color:#888; }
 
 /* fallback sem imagem */
-.ai-noimg {
+.associados-noimg {
     width:56px;height:56px;border-radius:28px;display:flex;align-items:center;justify-content:center;background:#eee;color:#777;font-weight:700;
 }
 
@@ -131,7 +131,7 @@
 
 /* Tablets e telas menores que 1024px */
 @media (max-width: 1024px) {
-    .ai-div-pai {
+    .associados-div-pai {
         flex-direction: column;
     }
     
@@ -162,7 +162,7 @@
         width: 100%;
     }
     
-    .ai-div-pai {
+    .associados-div-pai {
         gap: 20px;
     }
     
@@ -178,11 +178,11 @@
         font-size: 15px;
     }
     
-    .associado .ai-funcao {
+    .associado .associados-funcao {
         font-size: 12px;
     }
     
-    .associado .ai-local {
+    .associado .associados-local {
         font-size: 11px;
     }
 }
@@ -221,11 +221,11 @@
         border-radius: 8px;
     }
     
-    .ai-popup {
+    .associados-popup {
         width: 180px;
     }
     
-    .ai-popup img {
+    .associados-popup img {
         width: 60px;
         height: 60px;
     }
