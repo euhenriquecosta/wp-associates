@@ -16,6 +16,35 @@
     font-size: 14px;
     min-width: 160px;
     flex: 1 1 160px;
+    background: white;
+}
+
+/* Remove aparência padrão do Safari e customiza select */
+.associados-filtros select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: url('data:image/svg+xml;charset=UTF-8,%3csvg xmlns="http://www.w3.org/2000/svg" width="12" height="8" viewBox="0 0 12 8"%3e%3cpath fill="%23333" d="M6 8L0 0h12z"/%3e%3c/svg%3e');
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 10px;
+    padding-right: 32px;
+    cursor: pointer;
+}
+
+/* Remove sombras e gradientes do Safari */
+.associados-filtros input[type="text"],
+.associados-filtros select {
+    -webkit-box-shadow: none;
+    box-shadow: none;
+}
+
+.associados-filtros input[type="text"]:focus,
+.associados-filtros select:focus {
+    outline: none;
+    border-color: #999;
+    -webkit-box-shadow: none;
+    box-shadow: none;
 }
 .associados-filtros button {
     background: red;
@@ -214,6 +243,11 @@
         font-size: 12px;
         min-width: 100%;
         flex: 1 1 100%;
+    }
+    
+    .associados-filtros select {
+        padding-right: 32px;
+        background-size: 9px;
     }
     
     .associados-filtros button {
