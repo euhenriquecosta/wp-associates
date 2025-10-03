@@ -2,16 +2,21 @@
 
 sleep 2
 
-# Verificar se WordPress já está instalado
+echo "> Resetando banco de dados..."
+docker exec wordpress wp db reset --yes --allow-root 2>/dev/null
+
+echo "> Limpando uploads antigos..."
+docker exec wordpress rm -rf /var/www/html/wp-content/uploads/* --allow-root 2>/dev/null
+docker exec wordpress mkdir -p /var/www/html/wp-content/uploads --allow-root 2>/dev/null
+docker exec wordpress chown -R www-data:www-data /var/www/html/wp-content/uploads --allow-root 2>/dev/null
+docker exec wordpress chmod -R 755 /var/www/html/wp-content/uploads --allow-root 2>/dev/null
+
+echo "> Verificando instalação do WordPress..."
 if docker exec wordpress wp core is-installed --allow-root 2>/dev/null; then
     echo "> WordPress já está instalado"
 else
     echo "> Instalando WordPress..."
-    
-    # Baixar e instalar idioma português
     docker exec wordpress wp language core install pt_BR --activate --allow-root 2>/dev/null
-    
-    # Instalar WordPress
     docker exec wordpress wp core install \
         --url="http://localhost:8080" \
         --title="WP Associates" \
@@ -19,67 +24,56 @@ else
         --admin_password="admin" \
         --admin_email="admin@email.com" \
         --allow-root 2>/dev/null
-    
-    # Garantir que o idioma está em português
     docker exec wordpress wp site switch-language pt_BR --allow-root 2>/dev/null
 fi
 
-echo "> Removendo plugins padrão..."
+echo "> Ativando WP_DEBUG..."
+docker exec wordpress wp config set WP_DEBUG true --raw --allow-root 2>/dev/null
+docker exec wordpress wp config set WP_DEBUG_LOG true --raw --allow-root 2>/dev/null
+docker exec wordpress wp config set WP_DEBUG_DISPLAY true --raw --allow-root 2>/dev/null
 
-# Remover plugins padrão
+echo "> Limpando plugins e posts padrão..."
 docker exec wordpress wp plugin delete hello akismet --allow-root 2>/dev/null
-
-echo "> Removendo páginas e posts padrão..."
-
-# Remover páginas padrão (Sample Page, Privacy Policy)
 docker exec wordpress wp post delete $(docker exec wordpress wp post list --post_type=page --format=ids --allow-root 2>/dev/null) --force --allow-root 2>/dev/null
-
-# Remover post padrão (Hello World)
 docker exec wordpress wp post delete $(docker exec wordpress wp post list --post_type=post --format=ids --allow-root 2>/dev/null) --force --allow-root 2>/dev/null
 
 echo "> Instalando Elementor..."
-
-# Instalar e ativar Elementor
 docker exec wordpress wp plugin install elementor --activate --allow-root 2>/dev/null
-
-# Pular wizard do Elementor
 docker exec wordpress wp option update elementor_onboarded 1 --allow-root 2>/dev/null
-
-echo "> Instalando Elementor Pro..."
-
-# Instalar e ativar Elementor Pro
 docker exec wordpress wp plugin install https://github.com/proelements/proelements/releases/download/v3.31.3/pro-elements.zip --activate --allow-root 2>/dev/null
-
-# Pular wizard do Elementor Pro
 docker exec wordpress wp option update elementor_pro_license_data '{"license_key":"activated"}' --format=json --allow-root 2>/dev/null
 
-echo "> Ativando plugin WP Associates..."
+echo "> Instalando All-in-One WP Migration..."
+docker exec wordpress wp plugin install all-in-one-wp-migration --activate --allow-root 2>/dev/null
+docker exec wordpress wp option update ai1wm_max_file_size 536870912 --allow-root 2>/dev/null
+docker exec wordpress wp option update ai1wm_max_execution_time 300 --allow-root 2>/dev/null
+docker exec wordpress mkdir -p /var/www/html/wp-content/plugins/all-in-one-wp-migration/storage --allow-root 2>/dev/null
+docker exec wordpress mkdir -p /var/www/html/wp-content/ai1wm-backups --allow-root 2>/dev/null
+docker exec wordpress chmod -R 777 /var/www/html/wp-content/plugins/all-in-one-wp-migration/storage --allow-root 2>/dev/null
+docker exec wordpress chown -R www-data:www-data /var/www/html/wp-content/plugins/all-in-one-wp-migration/storage --allow-root 2>/dev/null
+docker exec wordpress chmod -R 777 /var/www/html/wp-content/ai1wm-backups --allow-root 2>/dev/null
+docker exec wordpress chown -R www-data:www-data /var/www/html/wp-content/ai1wm-backups --allow-root 2>/dev/null
 
-# Ativar plugin WP Associates
+echo "> Instalando File Manager..."
+docker exec wordpress wp plugin install wp-file-manager --activate --allow-root 2>/dev/null
+
+echo "> Instalando plugins dev (Query Monitor, User Switching)..."
+docker exec wordpress wp plugin install query-monitor user-switching --activate --allow-root 2>/dev/null
+
+echo "> Ativando plugin WP Associates..."
 docker exec wordpress wp plugin activate wp-associates --allow-root 2>/dev/null
 
 echo "> Instalando tema Hello Elementor..."
-
-# Instalar e ativar tema Hello Elementor
 docker exec wordpress wp theme install hello-elementor --activate --allow-root 2>/dev/null
-
-# Deletar temas padrão não utilizados
 docker exec wordpress wp theme delete twentytwentyone twentytwentytwo twentytwentythree twentytwentyfour --allow-root 2>/dev/null
 
 echo "> Configurando dashboard..."
-
-# Desabilitar widgets do dashboard para usuário admin
 docker exec wordpress wp user meta update 1 metaboxhidden_dashboard '["dashboard_site_health","dashboard_right_now","dashboard_activity","dashboard_quick_press","dashboard_primary","e-dashboard-overview","rpress_dashboard_sales"]' --format=json --allow-root 2>/dev/null
-
-# Desabilitar widget de boas-vindas
 docker exec wordpress wp user meta update 1 show_welcome_panel 0 --allow-root 2>/dev/null
-
-# Definir esquema de cores Midnight
 docker exec wordpress wp user meta update 1 admin_color midnight --allow-root 2>/dev/null
 
 echo ""
-echo "Configuração concluída!"
-echo ""
+echo "🚀 Configuração DEV concluída!"
 echo "URL:     http://localhost:8080"
 echo "Admin:   http://localhost:8080/wp-admin"
 echo ""
