@@ -45,14 +45,18 @@ docker exec wordpress wp option update elementor_pro_license_data '{"license_key
 
 echo "> Instalando All-in-One WP Migration..."
 docker exec wordpress wp plugin install all-in-one-wp-migration --activate --allow-root 2>/dev/null
+docker exec wordpress mkdir -p /var/www/html/wp-content/ai1wm-backups --allow-root 2>/dev/null
+docker exec wordpress mkdir -p /var/www/html/wp-content/plugins/all-in-one-wp-migration/storage --allow-root 2>/dev/null
+
+echo "> Configurando permissões do All-in-One WP Migration..."
+docker exec wordpress chown -R www-data:www-data /var/www/html/wp-content/ai1wm-backups --allow-root 2>/dev/null
+docker exec wordpress chown -R www-data:www-data /var/www/html/wp-content/plugins/all-in-one-wp-migration --allow-root 2>/dev/null
+docker exec wordpress chmod -R 777 /var/www/html/wp-content/ai1wm-backups --allow-root 2>/dev/null
+docker exec wordpress chmod -R 777 /var/www/html/wp-content/plugins/all-in-one-wp-migration --allow-root 2>/dev/null
+
+echo "> Configurando opções do All-in-One WP Migration..."
 docker exec wordpress wp option update ai1wm_max_file_size 536870912 --allow-root 2>/dev/null
 docker exec wordpress wp option update ai1wm_max_execution_time 300 --allow-root 2>/dev/null
-docker exec wordpress mkdir -p /var/www/html/wp-content/plugins/all-in-one-wp-migration/storage --allow-root 2>/dev/null
-docker exec wordpress mkdir -p /var/www/html/wp-content/ai1wm-backups --allow-root 2>/dev/null
-docker exec wordpress chmod -R 777 /var/www/html/wp-content/plugins/all-in-one-wp-migration/storage --allow-root 2>/dev/null
-docker exec wordpress chown -R www-data:www-data /var/www/html/wp-content/plugins/all-in-one-wp-migration/storage --allow-root 2>/dev/null
-docker exec wordpress chmod -R 777 /var/www/html/wp-content/ai1wm-backups --allow-root 2>/dev/null
-docker exec wordpress chown -R www-data:www-data /var/www/html/wp-content/ai1wm-backups --allow-root 2>/dev/null
 
 echo "> Instalando File Manager..."
 docker exec wordpress wp plugin install wp-file-manager --activate --allow-root 2>/dev/null

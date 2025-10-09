@@ -4,7 +4,7 @@
 cleanup() {
     echo ""
     echo "> Parando WordPress..."
-    docker-compose down 2>/dev/null
+    docker compose down 2>/dev/null
     echo "> Wordpress parado (dados preservados)"
     exit 0
 }
@@ -15,7 +15,7 @@ trap cleanup SIGINT SIGTERM
 echo "> Iniciando WordPress..."
 
 # Subir containers em background
-docker-compose up -d > /dev/null 2>&1
+docker compose up -d > /dev/null 2>&1
 
 # Aguardar MySQL ficar pronto
 until docker exec mysql mysqladmin ping -h"localhost" --silent 2>/dev/null; do
