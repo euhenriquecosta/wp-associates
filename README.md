@@ -43,12 +43,12 @@ As mudanças são refletidas imediatamente no WordPress (apenas recarregue a pá
 
 ### Parar o ambiente:
 ```bash
-docker-compose down
+docker compose down
 ```
 
 ### Limpar dados (cuidado!):
 ```bash
-docker-compose down -v
+docker compose down -v
 ```
 
 ## 📦 Gerar ZIP para Produção
@@ -68,7 +68,7 @@ Isso vai gerar o arquivo `associados-interativo.zip` contendo apenas os arquivos
 **Arquivos ignorados no ZIP:**
 - ❌ `.git/`
 - ❌ `vendor/`
-- ❌ `docker-compose.yml`
+- ❌ `docker compose.yml`
 - ❌ `composer.json`
 - ❌ `.vscode/`
 - ❌ `.gitignore`

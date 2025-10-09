@@ -12,11 +12,11 @@
     "build": "bin/build.sh",
     "dev": "bin/dev.sh",
     "setup": "bin/setup.sh",
-    "start": "docker-compose up -d",
-    "stop": "docker-compose down",
-    "clean": "docker-compose down -v",
-    "restart": "docker-compose restart",
-    "logs": "docker-compose logs -f wordpress"
+    "start": "docker compose up -d",
+    "stop": "docker compose down",
+    "clean": "docker compose down -v",
+    "restart": "docker compose restart",
+    "logs": "docker compose logs -f wordpress"
   },
   "require-dev": {
     "php-stubs/wordpress-stubs": "^6.0"
