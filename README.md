@@ -9,15 +9,6 @@ Plugin para registrar associados com mapa interativo usando Leaflet.
 composer dev
 ```
 
-### Primeira configuração (apenas 1x):
-1. Acesse: http://localhost:8080
-2. Configure o WordPress:
-   - **Título:** WP Associates
-   - **Usuário:** admin
-   - **Senha:** admin
-   - **Email:** admin@email.com
-3. Vá em Plugins e ative **"WP Associates"**
-
 ### Acessos:
 - **URL:** http://localhost:8080
 - **Admin:** http://localhost:8080/wp-admin
