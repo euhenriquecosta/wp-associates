@@ -23,26 +23,30 @@ jQuery(document).ready(function ($) {
 
         // Debounce de 500ms - capturar valor antes do timeout
         debounceTimer = setTimeout(function() {
-            let url = "https://photon.komoot.io/api/?q=" + encodeURIComponent(q) + "&limit=5&lang=default";
+            // API Nominatim com foco na Bahia
+            // Bounding box da Bahia: sudoeste(lon,lat) nordeste(lon,lat)
+            let url = "https://nominatim.openstreetmap.org/search?q=" + encodeURIComponent(q + ", Bahia, Brasil") + "&format=json&limit=5&countrycodes=br&bounded=1&viewbox=-46.8,-18.3,-38.0,-8.4";
 
             $.get(url, function (data) {
                 $suggestions.empty().show();
-                if (data && data.features) {
-                    data.features.forEach(function(f) {
-                        let name = f.properties.name || '';
-                        let state = f.properties.state || '';
-                        let country = f.properties.country || '';
-                        let full = [name, state, country].filter(Boolean).join(', ');
-
-                        $('<div style="padding:5px; cursor:pointer;">' + full + '</div>')
-                            .appendTo($suggestions)
-                            .on('click', function () {
-                                $search.val(full);
-                                $hiddenLocal.val(full);
-                                $lat.val(f.geometry.coordinates[1]);
-                                $lng.val(f.geometry.coordinates[0]);
-                                $suggestions.hide();
-                            });
+                if (data && data.length > 0) {
+                    data.forEach(function(place) {
+                        let name = place.display_name || '';
+                        let lat = parseFloat(place.lat);
+                        let lon = parseFloat(place.lon);
+                        
+                        // Verificar se está realmente na Bahia (filtro adicional)
+                        if (lat >= -18.3 && lat <= -8.4 && lon >= -46.8 && lon <= -38.0) {
+                            $('<div style="padding:5px; cursor:pointer; border-bottom:1px solid #eee;">' + name + '</div>')
+                                .appendTo($suggestions)
+                                .on('click', function () {
+                                    $search.val(name);
+                                    $hiddenLocal.val(name);
+                                    $lat.val(lat);
+                                    $lng.val(lon);
+                                    $suggestions.hide();
+                                });
+                        }
                     });
                 }
             });
@@ -50,7 +54,7 @@ jQuery(document).ready(function ($) {
     });
 
     $(document).on('click', function (e) {
-        if (!$(e.target).closest('#ai_suggestions, #ai_search_place').length) {
+        if (!$(e.target).closest('#associates_suggestions, #associates_search_place').length) {
             $suggestions.hide();
         }
     });

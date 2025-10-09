@@ -238,8 +238,6 @@ function associates_shortcode($atts) {
                 });
             }
 
-     
-
             document.querySelectorAll('.associate').forEach(function(el){
                 var lat = parseFloat(el.dataset.lat);
                 var lng = parseFloat(el.dataset.lng);
