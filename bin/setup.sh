@@ -58,8 +58,8 @@ echo "> Configurando opções do All-in-One WP Migration..."
 docker exec wordpress wp option update ai1wm_max_file_size 536870912 --allow-root 2>/dev/null
 docker exec wordpress wp option update ai1wm_max_execution_time 300 --allow-root 2>/dev/null
 
-echo "> Instalando File Manager..."
-docker exec wordpress wp plugin install wp-file-manager --activate --allow-root 2>/dev/null
+echo "> Instalando Filester File Manager..."
+docker exec wordpress wp plugin install filester --activate --allow-root 2>/dev/null
 
 echo "> Instalando plugins dev (Query Monitor, User Switching)..."
 docker exec wordpress wp plugin install query-monitor user-switching --activate --allow-root 2>/dev/null
