@@ -71,8 +71,19 @@ echo "> Instalando tema Hello Elementor..."
 docker exec wordpress wp theme install hello-elementor --activate --allow-root 2>/dev/null
 docker exec wordpress wp theme delete twentytwentyone twentytwentytwo twentytwentythree twentytwentyfour --allow-root 2>/dev/null
 
+echo "> Aplicando permissões corretas aos plugins..."
+docker exec wordpress find /var/www/html/wp-content/plugins -type d -exec chmod 755 {} \; 2>/dev/null
+docker exec wordpress find /var/www/html/wp-content/plugins -type f -exec chmod 644 {} \; 2>/dev/null
+docker exec wordpress chown -R www-data:www-data /var/www/html/wp-content/plugins 2>/dev/null
+
+echo "> Reaplicando permissões específicas do All-in-One WP Migration..."
+docker exec wordpress chown -R www-data:www-data /var/www/html/wp-content/ai1wm-backups 2>/dev/null
+docker exec wordpress chown -R www-data:www-data /var/www/html/wp-content/plugins/all-in-one-wp-migration 2>/dev/null
+docker exec wordpress chmod -R 0777 /var/www/html/wp-content/ai1wm-backups 2>/dev/null
+docker exec wordpress chmod -R 0777 /var/www/html/wp-content/plugins/all-in-one-wp-migration 2>/dev/null
+
 echo "> Configurando dashboard..."
-docker exec wordpress wp user meta update 1 metaboxhidden_dashboard '["dashboard_site_health","dashboard_right_now","dashboard_activity","dashboard_quick_press","dashboard_primary","e-dashboard-overview","rpress_dashboard_sales"]' --format=json --allow-root 2>/dev/null
+docker exec wordpress wp user meta update 1 metaboxhidden_dashboard '["dashboard_site_health","dashboard_right_now","dashboard_activity","dashboard_quick_press","dashboard_primary","e-dashboard-overview","rpress_dashboard_sales", "dashboard_recommended"]' --format=json --allow-root 2>/dev/null
 docker exec wordpress wp user meta update 1 show_welcome_panel 0 --allow-root 2>/dev/null
 docker exec wordpress wp user meta update 1 admin_color midnight --allow-root 2>/dev/null
 
