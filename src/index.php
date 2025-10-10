@@ -659,7 +659,7 @@ function associates_shortcode($atts) {
                             $short_desc = substr($description, 0, 150) . '...';
                             echo '<p class="associates-description-short">' . esc_html($short_desc) . '</p>';
                             echo '<p class="associates-description-full" style="display:none;">' . esc_html($description) . '</p>';
-                            echo '<button class="associates-read-more" onclick="toggleDescription(this)">Leia mais...</button>';
+                            echo '<button class="associates-read-more" onclick="toggleDescription(this, event)">Leia mais...</button>';
                         } else {
                             echo '<p class="associates-description">' . esc_html($description) . '</p>';
                         }
@@ -684,7 +684,8 @@ function associates_shortcode($atts) {
 
     <script>
     // Função para alternar descrição
-    function toggleDescription(button) {
+    function toggleDescription(button, event) {
+        event.stopPropagation(); // Impede que o clique abra o modal
         var container = button.parentNode;
         var shortDesc = container.querySelector('.associates-description-short');
         var fullDesc = container.querySelector('.associates-description-full');
