@@ -648,7 +648,7 @@ function associates_shortcode($atts) {
                     <div class="associate-thumb">
                         <?php
                             if ($image) echo $image;
-                            else echo '<img src="'.esc_url(plugins_url('placeholder.png', __FILE__)).'" alt="sem imagem" />';
+                            else echo '<img src="'.esc_url(plugins_url('assets/avatar.png', __FILE__)).'" alt="sem imagem" />';
                         ?>
                     </div>
                     <h3><?php the_title(); ?></h3>
@@ -741,9 +741,9 @@ function associates_shortcode($atts) {
                 return L.divIcon({
                     html: html,
                     className: 'ai-marker-wrapper',
-                    iconSize: [56,56],
-                    iconAnchor: [28,56],
-                    popupAnchor: [0,-56]
+                    iconSize: [36,36],
+                    iconAnchor: [18,36],
+                    popupAnchor: [0,-36]
                 });
             }
 
@@ -757,7 +757,7 @@ function associates_shortcode($atts) {
                 try { cats = JSON.parse(el.dataset.cats); } catch(e){ cats = []; }
 
                 var img = el.querySelector('img');
-                var imgOuter = img ? img.outerHTML : '<div class="associates-noimg">?</div>';
+                var imgOuter = img ? img.outerHTML : '<img src="<?php echo esc_url(plugins_url('assets/avatar.png', __FILE__)); ?>" alt="sem imagem" />';
 
                 if (!isNaN(lat) && !isNaN(lng)) {
                     var icon = createDivIconFromImage(imgOuter);
@@ -860,7 +860,7 @@ function associates_shortcode($atts) {
                     var description = card.dataset.description;
                     var municipality = card.dataset.municipality;
                     var img = card.querySelector('img');
-                    var imgOuter = img ? img.outerHTML : '<div class="associates-noimg">?</div>';
+                    var imgOuter = img ? img.outerHTML : '<img src="<?php echo esc_url(plugins_url('assets/avatar.png', __FILE__)); ?>" alt="sem imagem" />';
                     
                     var found = markers.find(function(m){ return m.name === name && m.marker; });
                     if (found && found.marker) {
