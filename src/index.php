@@ -530,7 +530,7 @@ function associates_metabox_callback($post) {
 
     wp_nonce_field('associates_save_meta', 'associates_nonce');
 
-    echo '<p><label><strong>Descrição</strong></label><br/><input type="text" name="associates_description" value="'.esc_attr($description).'" style="width:100%"></p>';
+    echo '<p><label><strong>Descrição</strong></label><br/><textarea name="associates_description" rows="4" style="width:100%; resize:vertical;">'.esc_textarea($description).'</textarea></p>';
 
     echo '<p><label><strong>Município</strong></label><br/>';
     echo '<select name="associates_municipality" style="width:100%; padding-horizontal:4px; height:auto;">';
@@ -555,7 +555,7 @@ function associates_save_meta($post_id) {
 
     // Salvar descrição
     if (isset($_POST['associates_description'])) {
-        update_post_meta($post_id, '_wpa_description', sanitize_text_field($_POST['associates_description']));
+        update_post_meta($post_id, '_wpa_description', sanitize_textarea_field($_POST['associates_description']));
     }
     
     // Salvar município e suas coordenadas
@@ -652,7 +652,19 @@ function associates_shortcode($atts) {
                         ?>
                     </div>
                     <h3><?php the_title(); ?></h3>
-                    <p class="associates-description"><?php echo esc_html($description); ?></p>
+                    <div class="associates-description-container">
+                        <?php 
+                        $description_length = strlen($description);
+                        if ($description_length > 150) {
+                            $short_desc = substr($description, 0, 150) . '...';
+                            echo '<p class="associates-description-short">' . esc_html($short_desc) . '</p>';
+                            echo '<p class="associates-description-full" style="display:none;">' . esc_html($description) . '</p>';
+                            echo '<button class="associates-read-more" onclick="toggleDescription(this)">Leia mais...</button>';
+                        } else {
+                            echo '<p class="associates-description">' . esc_html($description) . '</p>';
+                        }
+                        ?>
+                    </div>
                     <p class="associates-local"><?php echo esc_html($municipality); ?> - BA</p>
                 </div>
                 <?php endwhile; wp_reset_postdata(); ?>
@@ -662,7 +674,56 @@ function associates_shortcode($atts) {
         </div>
     </div>
 
+    <!-- Modal para exibir informações do associado -->
+    <div id="associates-modal" class="associates-modal" style="display: none;">
+        <div class="associates-modal-content">
+            <span class="associates-modal-close">&times;</span>
+            <div id="associates-modal-body"></div>
+        </div>
+    </div>
+
     <script>
+    // Função para alternar descrição
+    function toggleDescription(button) {
+        var container = button.parentNode;
+        var shortDesc = container.querySelector('.associates-description-short');
+        var fullDesc = container.querySelector('.associates-description-full');
+        
+        if (fullDesc.style.display === 'none') {
+            shortDesc.style.display = 'none';
+            fullDesc.style.display = 'block';
+            button.textContent = 'Leia menos...';
+        } else {
+            shortDesc.style.display = 'block';
+            fullDesc.style.display = 'none';
+            button.textContent = 'Leia mais...';
+        }
+    }
+
+    // Função para mostrar modal do associado
+    function showAssociateModal(name, description, municipality, imgOuter) {
+        var modal = document.getElementById('associates-modal');
+        var modalBody = document.getElementById('associates-modal-body');
+        
+        var modalContent = '<div class="associates-modal-header">' +
+            '<div class="associates-modal-image">' + imgOuter + '</div>' +
+            '<div class="associates-modal-info">' +
+                '<h3>' + name + '</h3>' +
+                '<p class="associates-modal-location">' + municipality + ' - BA</p>' +
+            '</div>' +
+        '</div>' +
+        '<div class="associates-modal-description">' + description + '</div>';
+        
+        modalBody.innerHTML = modalContent;
+        modal.classList.add('show');
+    }
+
+    // Função para fechar modal
+    function closeAssociateModal() {
+        var modal = document.getElementById('associates-modal');
+        modal.classList.remove('show');
+    }
+    
     (function(){
         // roda quando DOM pronto
         document.addEventListener('DOMContentLoaded', function(){
@@ -702,13 +763,12 @@ function associates_shortcode($atts) {
                     var icon = createDivIconFromImage(imgOuter);
 
                     var marker = L.marker([lat,lng], {icon: icon});
-                    var popupHtml = '<div class="associates-popup">'+
-                        (img ? imgOuter : '') +
-                        '<h4 style="margin:8px 0 4px;">'+ name +'</h4>' +
-                        '<div class="associates-popup-description">'+ description +'</div>' +
-                        '<div class="associates-popup-local">'+ municipality + ' - BA</div>' +
-                        '</div>';
-                    marker.bindPopup(popupHtml);
+                    
+                    // Ao invés de popup, usar click para abrir modal
+                    marker.on('click', function() {
+                        showAssociateModal(name, description, municipality, imgOuter);
+                    });
+                    
                     marker.addTo(markerGroup);
 
                     markers.push({el: el, marker: marker, lat: lat, lng: lng, cats: cats, municipality: municipality, name: name, description: description});
@@ -784,15 +844,28 @@ function associates_shortcode($atts) {
             // aplicar inicialmente (mostra todos)
             applyFilters();
 
-            // clicar no card centraliza/puxa popup
+            // Event listeners para fechar modal
+            document.querySelector('.associates-modal-close').addEventListener('click', closeAssociateModal);
+            document.getElementById('associates-modal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeAssociateModal();
+                }
+            });
+
+            // clicar no card centraliza e abre modal
             document.querySelectorAll('.associate').forEach(function(card){
                 card.addEventListener('click', function(){
                     // encontrar marker associado
                     var name = card.dataset.name;
+                    var description = card.dataset.description;
+                    var municipality = card.dataset.municipality;
+                    var img = card.querySelector('img');
+                    var imgOuter = img ? img.outerHTML : '<div class="associates-noimg">?</div>';
+                    
                     var found = markers.find(function(m){ return m.name === name && m.marker; });
                     if (found && found.marker) {
                         map.setView(found.marker.getLatLng(), 12);
-                        found.marker.openPopup();
+                        showAssociateModal(name, description, municipality, imgOuter);
                     }
                 });
             });
