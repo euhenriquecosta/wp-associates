@@ -25,15 +25,8 @@ mkdir -p ${BUILD_DIR}/${PLUGIN_NAME}
 
 echo "📦 Copiando arquivos do plugin..."
 
-# Copiar apenas os arquivos necessários
-cp ${PROJECT_DIR}/src/index.php ${BUILD_DIR}/${PLUGIN_NAME}/
-cp ${PROJECT_DIR}/src/styles.css ${BUILD_DIR}/${PLUGIN_NAME}/
-cp ${PROJECT_DIR}/src/script.js ${BUILD_DIR}/${PLUGIN_NAME}/
-
-# Se tiver imagem placeholder, copiar também
-if [ -f "${PROJECT_DIR}/src/placeholder.png" ]; then
-    cp ${PROJECT_DIR}/src/placeholder.png ${BUILD_DIR}/${PLUGIN_NAME}/
-fi
+# Copiar todo o conteúdo da pasta src
+cp -r ${PROJECT_DIR}/src/* ${BUILD_DIR}/${PLUGIN_NAME}/
 
 echo "🗜️  Criando arquivo ZIP..."
 

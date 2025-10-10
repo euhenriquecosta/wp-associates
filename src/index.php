@@ -2,7 +2,7 @@
 /**
  * Plugin Name: WP Associates
  * Description: Plugin para registrar associados com nome, localização, imagem e filtros interativos com mapa.
- * Version: 2.3
+ * Version: 2.4
  * Author: Henrique Costa
  */
 
