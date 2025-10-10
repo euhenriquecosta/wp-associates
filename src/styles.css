@@ -105,7 +105,7 @@
     width: 84px;
     height: 84px;
     overflow: hidden;
-    border-radius: 10px;
+    border-radius: 50%;
     margin-bottom: 8px;
 }
 .associate-thumb img {
@@ -113,34 +113,63 @@
     height: 100%;
     object-fit: cover;
     display: block;
-    border-radius: 8px;
+    border-radius: 50%;
 }
 
 /* textos do card */
 .associate h3 { margin: 6px 0 2px; font-size:16px; }
-.associate .associates-description { font-size: 12px; color:#777; margin: 0 0 4px;}
+.associate .associates-description,
+.associate .associates-description-short,
+.associate .associates-description-full { 
+    font-size: 12px; 
+    color:#777; 
+    margin: 0 0 4px;
+    line-height: 1.4;
+}
 .associate .associates-local { font-size: 12px; color:#9aa; margin: 0; }
+
+/* botão leia mais */
+.associate .associates-read-more {
+    background: none !important;
+    border: none !important;
+    color: #0073aa !important;
+    font-size: 11px !important;
+    cursor: pointer;
+    padding: 0 !important;
+    margin: 2px 0 4px 0;
+    text-decoration: none !important;
+    font-weight: normal !important;
+    white-space: normal !important;
+    border-radius: 0 !important;
+}
+.associate .associates-read-more:hover {
+    color: #005177 !important;
+    background: none !important;
+}
 
 /* icone de marker (divicon) */
 .associates-marker-wrapper { /* classe do divIcon container (Leaflet) */
     background: transparent;
 }
 .associates-marker-icon {
-    width:56px;
-    height:56px;
-    border-radius:100px;
+    width: 36px;
+    height: 36px;
+    border-radius:50%;
     overflow:hidden;
     display:flex;
     align-items:center;
     justify-content:center;
-    box-shadow:0 6px 12px rgba(0,0,0,0.2);
-    border:4px solid white;
+    box-shadow:0 1px 4px rgba(0,0,0,0.4);
+    border:1.5px solid white;
 }
 .associates-marker-icon img {
-    width:100%;
-    height:100%;
-    object-fit:cover;
-    display:block;
+    width:100% !important;
+    height:100% !important;
+    object-fit:cover !important;
+    display:block !important;
+    border-radius:50% !important;
+    max-width:100% !important;
+    max-height:100% !important;
 }
 
 /* popup estilo */
@@ -150,9 +179,166 @@
 .associates-popup .associates-popup-description { font-size:12px; color:#555; margin-bottom:4px; }
 .associates-popup .associates-popup-local { font-size:12px; color:#888; }
 
-/* fallback sem imagem */
-.associates-noimg {
-    width:56px;height:56px;border-radius:28px;display:flex;align-items:center;justify-content:center;background:#eee;color:#777;font-weight:700;
+
+/* Modal do associado */
+.associates-modal {
+    position: fixed;
+    z-index: 10000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.associates-modal.show {
+    display: flex !important;
+}
+
+.associates-modal-content {
+    background-color: white;
+    border-radius: 12px;
+    padding: 0;
+    max-width: 600px;
+    width: 100%;
+    max-height: 85vh;
+    overflow-y: auto;
+    position: relative;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    margin: auto;
+    transform: none;
+}
+
+.associates-modal-close {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    color: #aaa;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    z-index: 10001;
+    line-height: 1;
+}
+
+.associates-modal-close:hover {
+    color: #000;
+}
+
+.associates-modal-header {
+    display: flex;
+    align-items: center;
+    padding: 30px 30px 20px 30px;
+    border-bottom: 1px solid #eee;
+    gap: 20px;
+}
+
+.associates-modal-image {
+    flex-shrink: 0;
+}
+
+.associates-modal-image img {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 50% !important;
+    display: block;
+}
+
+
+.associates-modal-info {
+    flex: 1;
+}
+
+.associates-modal-info h3 {
+    margin: 0 0 8px 0;
+    font-size: 24px;
+    color: #333;
+    line-height: 1.3;
+}
+
+.associates-modal-location {
+    margin: 0;
+    font-size: 14px;
+    color: #666;
+    font-weight: 500;
+}
+
+.associates-modal-description {
+    padding: 30px;
+    font-size: 16px;
+    line-height: 1.6;
+    color: #555;
+}
+
+/* Responsividade do modal */
+@media (max-width: 768px) {
+    .associates-modal {
+        padding: 15px;
+        align-items: flex-start;
+        padding-top: 50px;
+    }
+    
+    .associates-modal-content {
+        max-height: calc(100vh - 100px);
+        max-width: 100%;
+        width: 100%;
+        border-radius: 8px;
+    }
+    
+    .associates-modal-header {
+        padding: 20px;
+        flex-direction: column;
+        text-align: center;
+        gap: 15px;
+    }
+    
+    .associates-modal-info h3 {
+        font-size: 20px;
+    }
+    
+    .associates-modal-description {
+        padding: 20px;
+        font-size: 15px;
+    }
+}
+
+@media (max-width: 480px) {
+    .associates-modal {
+        padding: 10px;
+        padding-top: 30px;
+    }
+    
+    .associates-modal-content {
+        max-height: calc(100vh - 60px);
+        border-radius: 6px;
+    }
+    
+    .associates-modal-header {
+        padding: 15px;
+        gap: 10px;
+    }
+    
+    .associates-modal-info h3 {
+        font-size: 18px;
+    }
+    
+    .associates-modal-description {
+        padding: 15px;
+        font-size: 14px;
+        line-height: 1.5;
+    }
+    
+    .associates-modal-close {
+        top: 10px;
+        right: 15px;
+        font-size: 24px;
+    }
 }
 
 
