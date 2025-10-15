@@ -521,6 +521,7 @@ add_action('init', 'associates_register_taxonomy_and_terms', 5);
  */
 function associates_add_metabox() {
     add_meta_box('associates_info', 'Informações do Associado', 'associates_metabox_callback', 'associate', 'normal', 'default');
+    add_meta_box('associates_event_photos', 'Fotos de Eventos', 'associates_event_photos_callback', 'associate', 'side', 'default');
 }
 add_action('add_meta_boxes', 'associates_add_metabox');
 
@@ -545,6 +546,42 @@ function associates_metabox_callback($post) {
     echo '</select>';
     echo '<small>Selecione o município onde o associado está localizado</small>';
     echo '</p>';
+}
+
+function associates_event_photos_callback($post) {
+    // Verificar se o usuário tem permissão para fazer upload
+    if (!current_user_can('upload_files')) {
+        echo '<p><em>Você não tem permissão para fazer upload de arquivos.</em></p>';
+        return;
+    }
+    
+    $event_photos = get_post_meta($post->ID, '_wpa_event_photos', true);
+    if (!is_array($event_photos)) {
+        $event_photos = array();
+    }
+    
+    wp_nonce_field('associates_save_event_photos', 'associates_event_photos_nonce');
+    
+    echo '<div id="associates-event-photos-container">';
+    echo '<p><a href="#" id="associates-add-event-photos" class="button">Adicionar fotos de eventos</a></p>';
+    echo '<div id="associates-event-photos-preview">';
+    
+    if (!empty($event_photos)) {
+        foreach ($event_photos as $photo_id) {
+            $photo_url = wp_get_attachment_image_url($photo_id, 'thumbnail');
+            if ($photo_url) {
+                echo '<div class="associates-event-photo-item" data-photo-id="' . esc_attr($photo_id) . '">';
+                echo '<img src="' . esc_url($photo_url) . '" alt="Foto de evento" style="width: 60px; height: 60px; object-fit: cover; border-radius: 4px; margin: 2px;">';
+                echo '<button type="button" class="associates-remove-event-photo" style="position: absolute; top: -5px; right: -5px; background: red; color: white; border: none; border-radius: 50%; width: 20px; height: 20px; cursor: pointer; font-size: 12px;">×</button>';
+                echo '</div>';
+            }
+        }
+    }
+    
+    echo '</div>';
+    echo '<input type="hidden" id="associates-event-photos-input" name="associates_event_photos" value="' . esc_attr(implode(',', $event_photos)) . '">';
+    echo '<p><small>Clique em "Adicionar fotos de eventos" para selecionar imagens da biblioteca de mídia ou fazer upload de novas imagens.</small></p>';
+    echo '</div>';
 }
 
 
@@ -572,6 +609,19 @@ function associates_save_meta($post_id) {
             }
         }
     }
+    
+    // Salvar fotos de eventos
+    if (isset($_POST['associates_event_photos']) && wp_verify_nonce($_POST['associates_event_photos_nonce'], 'associates_save_event_photos')) {
+        $event_photos = sanitize_text_field($_POST['associates_event_photos']);
+        $photo_ids = array();
+        
+        if (!empty($event_photos)) {
+            $photo_ids = array_map('intval', explode(',', $event_photos));
+            $photo_ids = array_filter($photo_ids); // Remove valores vazios
+        }
+        
+        update_post_meta($post_id, '_wpa_event_photos', $photo_ids);
+    }
 }
 add_action('save_post', 'associates_save_meta');
 /**
@@ -586,7 +636,39 @@ function associates_enqueue_scripts() {
     wp_register_style('associates-css', plugin_dir_url(__FILE__) . 'styles.css', array(), $css_version);
     wp_enqueue_style('associates-css');
 }
-add_action('wp_enqueue_scripts', 'associates_enqueue_scripts');
+
+/**
+ * Enfileirar scripts e estilos para o admin
+ */
+function associates_enqueue_admin_scripts($hook) {
+    global $post_type;
+    
+    if ($post_type === 'associate' && ($hook === 'post.php' || $hook === 'post-new.php')) {
+        // Enfileirar mídia e scripts necessários
+        wp_enqueue_media();
+        wp_enqueue_script('jquery');
+        wp_enqueue_script('wp-util');
+        
+        // Usar filemtime para versionar e evitar cache
+        $js_version = filemtime(plugin_dir_path(__FILE__) . 'script.js');
+        wp_enqueue_script('associates-admin-js', plugin_dir_url(__FILE__) . 'script.js', array('jquery', 'wp-util'), $js_version, true);
+        
+        $css_version = filemtime(plugin_dir_path(__FILE__) . 'styles.css');
+        wp_enqueue_style('associates-css', plugin_dir_url(__FILE__) . 'styles.css', array(), $css_version);
+        
+        // Adicionar variáveis JavaScript para o admin
+        wp_localize_script('associates-admin-js', 'associatesAdmin', array(
+            'ajaxUrl' => admin_url('admin-ajax.php'),
+            'nonce' => wp_create_nonce('associates_admin_nonce'),
+            'strings' => array(
+                'selectImages' => 'Selecionar Fotos de Eventos',
+                'addImages' => 'Adicionar Fotos',
+                'removeImage' => 'Remover foto'
+            )
+        ));
+    }
+}
+add_action('admin_enqueue_scripts', 'associates_enqueue_admin_scripts');
 
 
 /**
@@ -640,7 +722,10 @@ function associates_shortcode($atts) {
                     $description = get_post_meta(get_the_ID(), '_wpa_description', true);
                     $image = get_the_post_thumbnail(get_the_ID(), 'medium');
                     $terms_assoc = wp_get_post_terms(get_the_ID(), 'associate_category', array('fields'=>'ids'));
-                    $terms_assoc_json = esc_attr(json_encode($terms_assoc));
+                    $terms_assoc_json = '';
+                    if (!is_wp_error($terms_assoc)) {
+                        $terms_assoc_json = esc_attr(json_encode($terms_assoc));
+                    }
                 ?>
                 <div class="associate" data-lat="<?php echo esc_attr($lat); ?>" data-lng="<?php echo esc_attr($lng); ?>"
                      data-name="<?php echo esc_attr(get_the_title()); ?>" data-description="<?php echo esc_attr($description); ?>"

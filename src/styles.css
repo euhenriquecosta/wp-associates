@@ -469,3 +469,112 @@
         height: 60px;
     }
 }
+
+/* ========================================
+   ESTILOS PARA FOTOS DE EVENTOS (ADMIN)
+   ======================================== */
+
+#associates-event-photos-container {
+    padding: 10px 0;
+}
+
+#associates-add-event-photos {
+    background: #0073aa;
+    color: white;
+    text-decoration: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    display: inline-block;
+    margin-bottom: 10px;
+    border: none;
+    cursor: pointer;
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+#associates-add-event-photos:hover {
+    background: #005177;
+    color: white;
+    text-decoration: none;
+}
+
+#associates-event-photos-preview {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-top: 10px;
+}
+
+.associates-event-photo-item {
+    position: relative;
+    display: inline-block;
+    margin: 2px;
+    border: 2px solid #ddd;
+    border-radius: 6px;
+    overflow: hidden;
+    transition: border-color 0.2s ease;
+}
+
+.associates-event-photo-item:hover {
+    border-color: #0073aa;
+}
+
+.associates-event-photo-item img {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    display: block;
+    border-radius: 4px;
+}
+
+.associates-remove-event-photo {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: #dc3232;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    font-size: 12px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s ease;
+}
+
+.associates-remove-event-photo:hover {
+    background: #a00;
+}
+
+.associates-remove-event-photo:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px #fff, 0 0 0 4px #dc3232;
+}
+
+/* Estilo para quando não há fotos */
+#associates-event-photos-preview:empty::after {
+    content: "Nenhuma foto de evento adicionada";
+    color: #666;
+    font-style: italic;
+    font-size: 13px;
+    display: block;
+    margin-top: 10px;
+}
+
+/* Responsividade para o metabox de fotos */
+@media (max-width: 782px) {
+    .associates-event-photo-item img {
+        width: 50px;
+        height: 50px;
+    }
+    
+    .associates-remove-event-photo {
+        width: 18px;
+        height: 18px;
+        font-size: 11px;
+    }
+}
