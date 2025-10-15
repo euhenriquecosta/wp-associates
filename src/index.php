@@ -633,9 +633,9 @@ function associates_enqueue_scripts() {
 
     // Usar filemtime para versionar e evitar cache
     $css_version = filemtime(plugin_dir_path(__FILE__) . 'styles.css');
-    wp_register_style('associates-css', plugin_dir_url(__FILE__) . 'styles.css', array(), $css_version);
-    wp_enqueue_style('associates-css');
+    wp_enqueue_style('associates-css', plugin_dir_url(__FILE__) . 'styles.css', array(), $css_version);
 }
+add_action('wp_enqueue_scripts', 'associates_enqueue_scripts');
 
 /**
  * Enfileirar scripts e estilos para o admin
@@ -676,6 +676,13 @@ add_action('admin_enqueue_scripts', 'associates_enqueue_admin_scripts');
  * 6) Shortcode [associados_interativo]
  */
 function associates_shortcode($atts) {
+    // Garantir que os estilos sejam carregados
+    wp_enqueue_style('leaflet-css', 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css', array(), '1.9.4');
+    wp_enqueue_script('leaflet-js', 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js', array(), '1.9.4', true);
+    
+    $css_version = filemtime(plugin_dir_path(__FILE__) . 'styles.css');
+    wp_enqueue_style('associates-css', plugin_dir_url(__FILE__) . 'styles.css', array(), $css_version);
+    
     ob_start();
 
     // Query: todos os associados
@@ -726,10 +733,30 @@ function associates_shortcode($atts) {
                     if (!is_wp_error($terms_assoc)) {
                         $terms_assoc_json = esc_attr(json_encode($terms_assoc));
                     }
+                    
+                    // Buscar fotos de eventos
+                    $event_photos = get_post_meta(get_the_ID(), '_wpa_event_photos', true);
+                    $event_photos_json = '';
+                    if (is_array($event_photos) && !empty($event_photos)) {
+                        $event_photos_data = array();
+                        foreach ($event_photos as $photo_id) {
+                            $photo_url = wp_get_attachment_image_url($photo_id, 'large');
+                            $photo_thumb = wp_get_attachment_image_url($photo_id, 'thumbnail');
+                            if ($photo_url && $photo_thumb) {
+                                $event_photos_data[] = array(
+                                    'id' => $photo_id,
+                                    'url' => $photo_url,
+                                    'thumb' => $photo_thumb
+                                );
+                            }
+                        }
+                        $event_photos_json = esc_attr(json_encode($event_photos_data));
+                    }
                 ?>
                 <div class="associate" data-lat="<?php echo esc_attr($lat); ?>" data-lng="<?php echo esc_attr($lng); ?>"
                      data-name="<?php echo esc_attr(get_the_title()); ?>" data-description="<?php echo esc_attr($description); ?>"
-                     data-municipality="<?php echo esc_attr($municipality); ?>" data-cats='<?php echo $terms_assoc_json; ?>'>
+                     data-municipality="<?php echo esc_attr($municipality); ?>" data-cats='<?php echo $terms_assoc_json; ?>'
+                     data-event-photos='<?php echo $event_photos_json; ?>'>
                     <div class="associate-thumb">
                         <?php
                             if ($image) echo $image;
@@ -787,9 +814,38 @@ function associates_shortcode($atts) {
     }
 
     // Função para mostrar modal do associado
-    function showAssociateModal(name, description, municipality, imgOuter) {
+    function showAssociateModal(name, description, municipality, imgOuter, eventPhotos) {
         var modal = document.getElementById('associates-modal');
         var modalBody = document.getElementById('associates-modal-body');
+        
+        var eventPhotosHtml = '';
+        if (eventPhotos && eventPhotos.length > 0) {
+            eventPhotosHtml = '<div class="associates-modal-event-photos">' +
+                '<h4>Fotos de Eventos</h4>' +
+                '<div class="associates-carousel-container">' +
+                    '<div class="associates-carousel-wrapper">' +
+                        '<button class="associates-carousel-prev" onclick="changeCarouselSlide(-1)">‹</button>' +
+                        '<div class="associates-carousel-slides">';
+            
+            eventPhotos.forEach(function(photo, index) {
+                eventPhotosHtml += '<div class="associates-carousel-slide' + (index === 0 ? ' active' : '') + '">' +
+                    '<img src="' + photo.url + '" alt="Foto de evento" onclick="openPhotoModal(\'' + photo.url + '\', \'' + name + '\')">' +
+                    '</div>';
+            });
+            
+            eventPhotosHtml += '</div>' +
+                        '<button class="associates-carousel-next" onclick="changeCarouselSlide(1)">›</button>' +
+                    '</div>' +
+                    '<div class="associates-carousel-dots">';
+            
+            eventPhotos.forEach(function(photo, index) {
+                eventPhotosHtml += '<span class="associates-carousel-dot' + (index === 0 ? ' active' : '') + '" onclick="goToSlide(' + index + ')"></span>';
+            });
+            
+            eventPhotosHtml += '</div>' +
+                '</div>' +
+            '</div>';
+        }
         
         var modalContent = '<div class="associates-modal-header">' +
             '<div class="associates-modal-image">' + imgOuter + '</div>' +
@@ -798,7 +854,8 @@ function associates_shortcode($atts) {
                 '<p class="associates-modal-location">' + municipality + ' - BA</p>' +
             '</div>' +
         '</div>' +
-        '<div class="associates-modal-description">' + description + '</div>';
+        '<div class="associates-modal-description">' + description + '</div>' +
+        eventPhotosHtml;
         
         modalBody.innerHTML = modalContent;
         modal.classList.add('show');
@@ -808,6 +865,69 @@ function associates_shortcode($atts) {
     function closeAssociateModal() {
         var modal = document.getElementById('associates-modal');
         modal.classList.remove('show');
+    }
+
+    // Variáveis globais para o carrossel
+    var currentSlide = 0;
+    var totalSlides = 0;
+
+    // Função para mudar slide do carrossel
+    function changeCarouselSlide(direction) {
+        var slides = document.querySelectorAll('.associates-carousel-slide');
+        var dots = document.querySelectorAll('.associates-carousel-dot');
+        
+        if (slides.length === 0) return;
+        
+        totalSlides = slides.length;
+        currentSlide += direction;
+        
+        if (currentSlide >= totalSlides) {
+            currentSlide = 0;
+        } else if (currentSlide < 0) {
+            currentSlide = totalSlides - 1;
+        }
+        
+        // Atualizar slides
+        slides.forEach(function(slide, index) {
+            slide.classList.toggle('active', index === currentSlide);
+        });
+        
+        // Atualizar dots
+        dots.forEach(function(dot, index) {
+            dot.classList.toggle('active', index === currentSlide);
+        });
+    }
+
+    // Função para ir para um slide específico
+    function goToSlide(slideIndex) {
+        currentSlide = slideIndex;
+        var slides = document.querySelectorAll('.associates-carousel-slide');
+        var dots = document.querySelectorAll('.associates-carousel-dot');
+        
+        slides.forEach(function(slide, index) {
+            slide.classList.toggle('active', index === slideIndex);
+        });
+        
+        dots.forEach(function(dot, index) {
+            dot.classList.toggle('active', index === slideIndex);
+        });
+    }
+
+    // Função para abrir modal de foto em tamanho grande
+    function openPhotoModal(photoUrl, associateName) {
+        var modal = document.getElementById('associates-modal');
+        var modalBody = document.getElementById('associates-modal-body');
+        
+        var photoModalContent = '<div class="associates-modal-header">' +
+            '<div class="associates-modal-info">' +
+                '<h3>' + associateName + '</h3>' +
+            '</div>' +
+        '</div>' +
+        '<div class="associates-modal-photo-full">' +
+            '<img src="' + photoUrl + '" alt="Foto de evento em tamanho grande">' +
+        '</div>';
+        
+        modalBody.innerHTML = photoModalContent;
     }
     
     (function(){
@@ -840,7 +960,9 @@ function associates_shortcode($atts) {
                 var description = el.dataset.description || '';
                 var municipality = el.dataset.municipality || '';
                 var cats = [];
+                var eventPhotos = [];
                 try { cats = JSON.parse(el.dataset.cats); } catch(e){ cats = []; }
+                try { eventPhotos = JSON.parse(el.dataset.eventPhotos); } catch(e){ eventPhotos = []; }
 
                 var img = el.querySelector('img');
                 var imgOuter = img ? img.outerHTML : '<img src="<?php echo esc_url(plugins_url('assets/avatar.png', __FILE__)); ?>" alt="sem imagem" />';
@@ -852,14 +974,14 @@ function associates_shortcode($atts) {
                     
                     // Ao invés de popup, usar click para abrir modal
                     marker.on('click', function() {
-                        showAssociateModal(name, description, municipality, imgOuter);
+                        showAssociateModal(name, description, municipality, imgOuter, eventPhotos);
                     });
                     
                     marker.addTo(markerGroup);
 
-                    markers.push({el: el, marker: marker, lat: lat, lng: lng, cats: cats, municipality: municipality, name: name, description: description});
+                    markers.push({el: el, marker: marker, lat: lat, lng: lng, cats: cats, municipality: municipality, name: name, description: description, eventPhotos: eventPhotos});
                 } else {
-                    markers.push({el: el, marker: null, lat: null, lng: null, cats: cats, municipality: municipality, name: name, description: description});
+                    markers.push({el: el, marker: null, lat: null, lng: null, cats: cats, municipality: municipality, name: name, description: description, eventPhotos: eventPhotos});
                 }
             });
 
@@ -945,13 +1067,15 @@ function associates_shortcode($atts) {
                     var name = card.dataset.name;
                     var description = card.dataset.description;
                     var municipality = card.dataset.municipality;
+                    var eventPhotos = [];
+                    try { eventPhotos = JSON.parse(card.dataset.eventPhotos); } catch(e){ eventPhotos = []; }
                     var img = card.querySelector('img');
                     var imgOuter = img ? img.outerHTML : '<img src="<?php echo esc_url(plugins_url('assets/avatar.png', __FILE__)); ?>" alt="sem imagem" />';
                     
                     var found = markers.find(function(m){ return m.name === name && m.marker; });
                     if (found && found.marker) {
                         map.setView(found.marker.getLatLng(), 12);
-                        showAssociateModal(name, description, municipality, imgOuter);
+                        showAssociateModal(name, description, municipality, imgOuter, eventPhotos);
                     }
                 });
             });
