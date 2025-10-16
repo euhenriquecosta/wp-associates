@@ -521,7 +521,7 @@ add_action('init', 'associates_register_taxonomy_and_terms', 5);
  */
 function associates_add_metabox() {
     add_meta_box('associates_info', 'Informações do Associado', 'associates_metabox_callback', 'associate', 'normal', 'default');
-    add_meta_box('associates_event_photos', 'Fotos de Eventos', 'associates_event_photos_callback', 'associate', 'side', 'default');
+    add_meta_box('associates_photos', 'Fotos', 'associates_photos_callback', 'associate', 'side', 'default');
 }
 add_action('add_meta_boxes', 'associates_add_metabox');
 
@@ -548,39 +548,39 @@ function associates_metabox_callback($post) {
     echo '</p>';
 }
 
-function associates_event_photos_callback($post) {
+function associates_photos_callback($post) {
     // Verificar se o usuário tem permissão para fazer upload
     if (!current_user_can('upload_files')) {
         echo '<p><em>Você não tem permissão para fazer upload de arquivos.</em></p>';
         return;
     }
     
-    $event_photos = get_post_meta($post->ID, '_wpa_event_photos', true);
-    if (!is_array($event_photos)) {
-        $event_photos = array();
+    $photos = get_post_meta($post->ID, '_wpa_photos', true);
+    if (!is_array($photos)) {
+        $photos = array();
     }
     
-    wp_nonce_field('associates_save_event_photos', 'associates_event_photos_nonce');
+    wp_nonce_field('associates_save_photos', 'associates_photos_nonce');
     
-    echo '<div id="associates-event-photos-container">';
-    echo '<p><a href="#" id="associates-add-event-photos" class="button">Adicionar fotos de eventos</a></p>';
-    echo '<div id="associates-event-photos-preview">';
+    echo '<div id="associates-photos-container">';
+    echo '<p><a href="#" id="associates-add-photos" class="button">Adicionar fotos</a></p>';
+    echo '<div id="associates-photos-preview">';
     
-    if (!empty($event_photos)) {
-        foreach ($event_photos as $photo_id) {
+    if (!empty($photos)) {
+        foreach ($photos as $photo_id) {
             $photo_url = wp_get_attachment_image_url($photo_id, 'thumbnail');
             if ($photo_url) {
-                echo '<div class="associates-event-photo-item" data-photo-id="' . esc_attr($photo_id) . '">';
-                echo '<img src="' . esc_url($photo_url) . '" alt="Foto de evento" style="width: 60px; height: 60px; object-fit: cover; border-radius: 4px; margin: 2px;">';
-                echo '<button type="button" class="associates-remove-event-photo" style="position: absolute; top: -5px; right: -5px; background: red; color: white; border: none; border-radius: 50%; width: 20px; height: 20px; cursor: pointer; font-size: 12px;">×</button>';
+                echo '<div class="associates-photo-item" data-photo-id="' . esc_attr($photo_id) . '">';
+                echo '<img src="' . esc_url($photo_url) . '" alt="Foto" style="width: 60px; height: 60px; object-fit: cover; border-radius: 4px; margin: 2px;">';
+                echo '<button type="button" class="associates-remove-photo" style="position: absolute; top: -5px; right: -5px; background: red; color: white; border: none; border-radius: 50%; width: 20px; height: 20px; cursor: pointer; font-size: 12px;">×</button>';
                 echo '</div>';
             }
         }
     }
     
     echo '</div>';
-    echo '<input type="hidden" id="associates-event-photos-input" name="associates_event_photos" value="' . esc_attr(implode(',', $event_photos)) . '">';
-    echo '<p><small>Clique em "Adicionar fotos de eventos" para selecionar imagens da biblioteca de mídia ou fazer upload de novas imagens.</small></p>';
+    echo '<input type="hidden" id="associates-photos-input" name="associates_photos" value="' . esc_attr(implode(',', $photos)) . '">';
+    echo '<p><small>Clique em "Adicionar fotos" para selecionar imagens da biblioteca de mídia ou fazer upload de novas imagens.</small></p>';
     echo '</div>';
 }
 
@@ -610,17 +610,17 @@ function associates_save_meta($post_id) {
         }
     }
     
-    // Salvar fotos de eventos
-    if (isset($_POST['associates_event_photos']) && wp_verify_nonce($_POST['associates_event_photos_nonce'], 'associates_save_event_photos')) {
-        $event_photos = sanitize_text_field($_POST['associates_event_photos']);
+    // Salvar fotos
+    if (isset($_POST['associates_photos']) && wp_verify_nonce($_POST['associates_photos_nonce'], 'associates_save_photos')) {
+        $photos = sanitize_text_field($_POST['associates_photos']);
         $photo_ids = array();
         
-        if (!empty($event_photos)) {
-            $photo_ids = array_map('intval', explode(',', $event_photos));
+        if (!empty($photos)) {
+            $photo_ids = array_map('intval', explode(',', $photos));
             $photo_ids = array_filter($photo_ids); // Remove valores vazios
         }
         
-        update_post_meta($post_id, '_wpa_event_photos', $photo_ids);
+        update_post_meta($post_id, '_wpa_photos', $photo_ids);
     }
 }
 add_action('save_post', 'associates_save_meta');
@@ -661,7 +661,7 @@ function associates_enqueue_admin_scripts($hook) {
             'ajaxUrl' => admin_url('admin-ajax.php'),
             'nonce' => wp_create_nonce('associates_admin_nonce'),
             'strings' => array(
-                'selectImages' => 'Selecionar Fotos de Eventos',
+                'selectImages' => 'Selecionar Fotos',
                 'addImages' => 'Adicionar Fotos',
                 'removeImage' => 'Remover foto'
             )
@@ -728,35 +728,36 @@ function associates_shortcode($atts) {
                     $lng = get_post_meta(get_the_ID(), '_wpa_longitude', true);
                     $description = get_post_meta(get_the_ID(), '_wpa_description', true);
                     $image = get_the_post_thumbnail(get_the_ID(), 'medium');
-                    $terms_assoc = wp_get_post_terms(get_the_ID(), 'associate_category', array('fields'=>'ids'));
+                    $terms_result = wp_get_post_terms(get_the_ID(), 'associate_category', array('fields'=>'ids'));
+                    $terms_assoc = (is_wp_error($terms_result) || $terms_result === false) ? array() : $terms_result;
                     $terms_assoc_json = '';
-                    if (!is_wp_error($terms_assoc)) {
+                    if (!empty($terms_assoc) && is_array($terms_assoc)) {
                         $terms_assoc_json = esc_attr(json_encode($terms_assoc));
                     }
                     
-                    // Buscar fotos de eventos
-                    $event_photos = get_post_meta(get_the_ID(), '_wpa_event_photos', true);
-                    $event_photos_json = '';
-                    if (is_array($event_photos) && !empty($event_photos)) {
-                        $event_photos_data = array();
-                        foreach ($event_photos as $photo_id) {
+                    // Buscar fotos
+                    $photos = get_post_meta(get_the_ID(), '_wpa_photos', true);
+                    $photos_json = '';
+                    if (is_array($photos) && !empty($photos)) {
+                        $photos_data = array();
+                        foreach ($photos as $photo_id) {
                             $photo_url = wp_get_attachment_image_url($photo_id, 'large');
                             $photo_thumb = wp_get_attachment_image_url($photo_id, 'thumbnail');
                             if ($photo_url && $photo_thumb) {
-                                $event_photos_data[] = array(
+                                $photos_data[] = array(
                                     'id' => $photo_id,
                                     'url' => $photo_url,
                                     'thumb' => $photo_thumb
                                 );
                             }
                         }
-                        $event_photos_json = esc_attr(json_encode($event_photos_data));
+                        $photos_json = esc_attr(json_encode($photos_data));
                     }
                 ?>
                 <div class="associate" data-lat="<?php echo esc_attr($lat); ?>" data-lng="<?php echo esc_attr($lng); ?>"
                      data-name="<?php echo esc_attr(get_the_title()); ?>" data-description="<?php echo esc_attr($description); ?>"
                      data-municipality="<?php echo esc_attr($municipality); ?>" data-cats='<?php echo $terms_assoc_json; ?>'
-                     data-event-photos='<?php echo $event_photos_json; ?>'>
+                     data-photos='<?php echo $photos_json; ?>'>
                     <div class="associate-thumb">
                         <?php
                             if ($image) echo $image;
@@ -814,35 +815,35 @@ function associates_shortcode($atts) {
     }
 
     // Função para mostrar modal do associado
-    function showAssociateModal(name, description, municipality, imgOuter, eventPhotos) {
+    function showAssociateModal(name, description, municipality, imgOuter, photos) {
         var modal = document.getElementById('associates-modal');
         var modalBody = document.getElementById('associates-modal-body');
         
-        var eventPhotosHtml = '';
-        if (eventPhotos && eventPhotos.length > 0) {
-            eventPhotosHtml = '<div class="associates-modal-event-photos">' +
-                '<h4>Fotos de Eventos</h4>' +
+        var photosHtml = '';
+        if (photos && photos.length > 0) {
+            photosHtml = '<div class="associates-modal-photos">' +
+                '<h4>Fotos</h4>' +
                 '<div class="associates-carousel-container">' +
                     '<div class="associates-carousel-wrapper">' +
                         '<button class="associates-carousel-prev" onclick="changeCarouselSlide(-1)">‹</button>' +
                         '<div class="associates-carousel-slides">';
             
-            eventPhotos.forEach(function(photo, index) {
-                eventPhotosHtml += '<div class="associates-carousel-slide' + (index === 0 ? ' active' : '') + '">' +
-                    '<img src="' + photo.url + '" alt="Foto de evento">' +
+            photos.forEach(function(photo, index) {
+                photosHtml += '<div class="associates-carousel-slide' + (index === 0 ? ' active' : '') + '">' +
+                    '<img src="' + photo.url + '" alt="Foto">' +
                     '</div>';
             });
             
-            eventPhotosHtml += '</div>' +
+            photosHtml += '</div>' +
                         '<button class="associates-carousel-next" onclick="changeCarouselSlide(1)">›</button>' +
                     '</div>' +
                     '<div class="associates-carousel-dots">';
             
-            eventPhotos.forEach(function(photo, index) {
-                eventPhotosHtml += '<span class="associates-carousel-dot' + (index === 0 ? ' active' : '') + '" onclick="goToSlide(' + index + ')"></span>';
+            photos.forEach(function(photo, index) {
+                photosHtml += '<span class="associates-carousel-dot' + (index === 0 ? ' active' : '') + '" onclick="goToSlide(' + index + ')"></span>';
             });
             
-            eventPhotosHtml += '</div>' +
+            photosHtml += '</div>' +
                 '</div>' +
             '</div>';
         }
@@ -855,7 +856,7 @@ function associates_shortcode($atts) {
             '</div>' +
         '</div>' +
         '<div class="associates-modal-description">' + description + '</div>' +
-        eventPhotosHtml;
+        photosHtml;
         
         modalBody.innerHTML = modalContent;
         modal.classList.add('show');
@@ -944,9 +945,9 @@ function associates_shortcode($atts) {
                 var description = el.dataset.description || '';
                 var municipality = el.dataset.municipality || '';
                 var cats = [];
-                var eventPhotos = [];
+                var photos = [];
                 try { cats = JSON.parse(el.dataset.cats); } catch(e){ cats = []; }
-                try { eventPhotos = JSON.parse(el.dataset.eventPhotos); } catch(e){ eventPhotos = []; }
+                try { photos = JSON.parse(el.dataset.photos); } catch(e){ photos = []; }
 
                 var img = el.querySelector('img');
                 var imgOuter = img ? img.outerHTML : '<img src="<?php echo esc_url(plugins_url('assets/avatar.png', __FILE__)); ?>" alt="sem imagem" />';
@@ -958,14 +959,14 @@ function associates_shortcode($atts) {
                     
                     // Ao invés de popup, usar click para abrir modal
                     marker.on('click', function() {
-                        showAssociateModal(name, description, municipality, imgOuter, eventPhotos);
+                        showAssociateModal(name, description, municipality, imgOuter, photos);
                     });
                     
                     marker.addTo(markerGroup);
 
-                    markers.push({el: el, marker: marker, lat: lat, lng: lng, cats: cats, municipality: municipality, name: name, description: description, eventPhotos: eventPhotos});
+                    markers.push({el: el, marker: marker, lat: lat, lng: lng, cats: cats, municipality: municipality, name: name, description: description, photos: photos});
                 } else {
-                    markers.push({el: el, marker: null, lat: null, lng: null, cats: cats, municipality: municipality, name: name, description: description, eventPhotos: eventPhotos});
+                    markers.push({el: el, marker: null, lat: null, lng: null, cats: cats, municipality: municipality, name: name, description: description, photos: photos});
                 }
             });
 
@@ -1051,15 +1052,15 @@ function associates_shortcode($atts) {
                     var name = card.dataset.name;
                     var description = card.dataset.description;
                     var municipality = card.dataset.municipality;
-                    var eventPhotos = [];
-                    try { eventPhotos = JSON.parse(card.dataset.eventPhotos); } catch(e){ eventPhotos = []; }
+                    var photos = [];
+                    try { photos = JSON.parse(card.dataset.photos); } catch(e){ photos = []; }
                     var img = card.querySelector('img');
                     var imgOuter = img ? img.outerHTML : '<img src="<?php echo esc_url(plugins_url('assets/avatar.png', __FILE__)); ?>" alt="sem imagem" />';
                     
                     var found = markers.find(function(m){ return m.name === name && m.marker; });
                     if (found && found.marker) {
                         map.setView(found.marker.getLatLng(), 12);
-                        showAssociateModal(name, description, municipality, imgOuter, eventPhotos);
+                        showAssociateModal(name, description, municipality, imgOuter, photos);
                     }
                 });
             });
