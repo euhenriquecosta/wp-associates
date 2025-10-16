@@ -27,7 +27,7 @@ if (file_exists(WPA_PLUGIN_PATH . '/vendor/autoload.php')) {
 }
 
 // Incluir o arquivo principal do plugin
-require_once WPA_PLUGIN_PATH . '/Plugin.php';
+require_once WPA_PLUGIN_PATH . '/includes/Plugin.php';
 
 // Verificar se a classe existe e inicializar
 if (class_exists('Associates\Plugin')) {

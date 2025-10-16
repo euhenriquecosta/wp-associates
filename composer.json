@@ -3,9 +3,9 @@
   "description": "Plugin para registrar associados com mapa interativo",
   "type": "wordpress-plugin",
   "autoload": {
-    "classmap": [
-      "src/"
-    ]
+    "psr-4": {
+      "Associates\\": "includes/"
+    }
   },
   "repositories": [
     {
