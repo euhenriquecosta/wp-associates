@@ -2,11 +2,21 @@
   "name": "associados/plugin",
   "description": "Plugin para registrar associados com mapa interativo",
   "type": "wordpress-plugin",
+  "repositories": [
+    {
+      "type": "composer",
+      "url": "https://wpackagist.org"
+    }
+  ],
   "require": {
-    "php": ">=8.1"
+    "php": ">=8.1",
+    "wpackagist-plugin/advanced-custom-fields": "*"
   },
   "config": {
-    "process-timeout": 0
+    "process-timeout": 0,
+    "allow-plugins": {
+      "composer/installers": true
+    }
   },
   "scripts": {
     "build": "bin/build.sh",
