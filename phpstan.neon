@@ -1,0 +1,11 @@
+includes:
+    - vendor/szepeviktor/phpstan-wordpress/extension.neon
+
+parameters:
+    level: 3
+    paths:
+        - src
+    ignoreErrors:
+        - '#Function wp_get_post_terms\(\) has no return type specified#'
+    bootstrapFiles:
+        - vendor/php-stubs/wordpress-stubs/wordpress-stubs.php
