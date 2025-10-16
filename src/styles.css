@@ -239,15 +239,19 @@
 }
 
 .associates-modal-image {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+     overflow: hidden;
     flex-shrink: 0;
 }
 
 .associates-modal-image img {
-    width: 80px;
-    height: 80px;
+    width: 100%;
+    height: 100%;
     object-fit: cover;
-    border-radius: 50% !important;
     display: block;
+    border-radius: 0;
 }
 
 
@@ -321,7 +325,6 @@
     max-height: 300px;
     object-fit: contain;
     border-radius: 6px;
-    cursor: pointer;
     transition: transform 0.2s ease;
 }
 
@@ -390,19 +393,6 @@
     background: #005177;
 }
 
-/* Modal de foto em tamanho grande */
-.associates-modal-photo-full {
-    padding: 30px;
-    text-align: center;
-}
-
-.associates-modal-photo-full img {
-    max-width: 100%;
-    max-height: 70vh;
-    object-fit: contain;
-    border-radius: 8px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-}
 
 /* Responsividade do modal */
 @media (max-width: 768px) {
@@ -428,6 +418,11 @@
     
     .associates-modal-info h3 {
         font-size: 20px;
+    }
+    
+    .associates-modal-image {
+        width: 70px;
+        height: 70px;
     }
     
     .associates-modal-description {
@@ -486,6 +481,11 @@
     
     .associates-modal-info h3 {
         font-size: 18px;
+    }
+    
+    .associates-modal-image {
+        width: 60px;
+        height: 60px;
     }
     
     .associates-modal-description {

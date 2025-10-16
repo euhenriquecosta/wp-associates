@@ -829,7 +829,7 @@ function associates_shortcode($atts) {
             
             eventPhotos.forEach(function(photo, index) {
                 eventPhotosHtml += '<div class="associates-carousel-slide' + (index === 0 ? ' active' : '') + '">' +
-                    '<img src="' + photo.url + '" alt="Foto de evento" onclick="openPhotoModal(\'' + photo.url + '\', \'' + name + '\')">' +
+                    '<img src="' + photo.url + '" alt="Foto de evento">' +
                     '</div>';
             });
             
@@ -913,22 +913,6 @@ function associates_shortcode($atts) {
         });
     }
 
-    // Função para abrir modal de foto em tamanho grande
-    function openPhotoModal(photoUrl, associateName) {
-        var modal = document.getElementById('associates-modal');
-        var modalBody = document.getElementById('associates-modal-body');
-        
-        var photoModalContent = '<div class="associates-modal-header">' +
-            '<div class="associates-modal-info">' +
-                '<h3>' + associateName + '</h3>' +
-            '</div>' +
-        '</div>' +
-        '<div class="associates-modal-photo-full">' +
-            '<img src="' + photoUrl + '" alt="Foto de evento em tamanho grande">' +
-        '</div>';
-        
-        modalBody.innerHTML = photoModalContent;
-    }
     
     (function(){
         // roda quando DOM pronto
