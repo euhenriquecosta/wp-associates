@@ -32,8 +32,8 @@ class PostType {
      */
     private function __construct() {
         add_action('init', array($this, 'register_post_type'), 0);
-        add_filter('enter_title_here', array($this, 'change_title_placeholder'));
         add_filter('admin_post_thumbnail_html', array($this, 'change_featured_image_text'), 10, 2);
+        add_action('admin_head', array($this, 'add_admin_styles'));
     }
     
     /**
@@ -76,33 +76,23 @@ class PostType {
         $args = array(
             'labels' => $labels,
             'public' => true,
-            'publicly_queryable' => true,
-            'show_ui' => true,
-            'show_in_menu' => true,
-            'show_in_rest' => true,
-            'query_var' => true,
-            'rewrite' => array('slug' => 'event'),
-            'capability_type' => 'post',
-            'has_archive' => true,
-            'hierarchical' => false,
-            'menu_position' => 6,
+            'has_archive' => false,
             'menu_icon' => 'dashicons-calendar-alt',
-            'supports' => array('title', 'editor', 'thumbnail', 'excerpt'),
-            'show_in_nav_menus' => true,
+            'menu_position' => 5,
+            'supports' => array('title', 'thumbnail'),
+            'show_in_rest' => true,
+            'rewrite' => false,
+            'publicly_queryable' => false,
+            'capability_type' => 'post',
+            'hierarchical' => false,
+            'show_in_menu' => true,
+            'show_in_admin_bar' => true,
+            'can_export' => true,
+            'exclude_from_search' => false,
+            'show_in_nav_menus' => false,
         );
         
         register_post_type($this->post_type_slug, $args);
-    }
-    
-    /**
-     * Altera o placeholder do título
-     */
-    public function change_title_placeholder($title) {
-        $screen = get_current_screen();
-        if ($screen && $screen->post_type === $this->post_type_slug) {
-            $title = __('Adicionar título do Evento', 'wp-associates');
-        }
-        return $title;
     }
     
     /**
@@ -116,6 +106,32 @@ class PostType {
             $content = str_replace('Replace featured image', __('Substituir imagem do evento', 'wp-associates'), $content);
         }
         return $content;
+    }
+    
+    /**
+     * Adiciona estilos CSS no admin para forçar aparência de post type
+     */
+    public function add_admin_styles() {
+        $screen = get_current_screen();
+        if ($screen && $screen->post_type === $this->post_type_slug) {
+            echo '<style>
+                .post-type-event .editor-post-title__input::placeholder {
+                    content: "Adicionar título do Evento";
+                }
+                .post-type-event .editor-post-title__input::placeholder::before {
+                    content: "Adicionar título do Evento";
+                }
+                .post-type-event .editor-post-title__input {
+                    font-size: 2.5rem;
+                    font-weight: 600;
+                    line-height: 1.2;
+                    color: #1e1e1e;
+                    border: none;
+                    outline: none;
+                    box-shadow: none;
+                }
+            </style>';
+        }
     }
     
     /**

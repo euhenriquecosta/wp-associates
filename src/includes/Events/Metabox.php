@@ -34,6 +34,7 @@ class Metabox {
         add_action('add_meta_boxes', array($this, 'add_metabox'));
         add_action('save_post', array($this, 'save_meta'));
         add_action('admin_enqueue_scripts', array($this, 'enqueue_admin_assets'));
+        add_filter('enter_title_here', array($this, 'change_title_placeholder'));
     }
     
     /**
@@ -51,81 +52,68 @@ class Metabox {
      */
     public function add_metabox() {
         add_meta_box(
-            'event_gallery',
-            __('Galeria de Imagens', 'wp-associates'),
-            array($this, 'gallery_metabox_callback'),
+            'event_details',
+            __('Informações do Evento', 'wp-associates'),
+            array($this, 'details_metabox_callback'),
             $this->post_type,
             'normal',
             'default'
         );
-        
-        add_meta_box(
-            'event_details',
-            __('Detalhes do Evento', 'wp-associates'),
-            array($this, 'details_metabox_callback'),
-            $this->post_type,
-            'side',
-            'default'
-        );
     }
     
+    
     /**
-     * Callback do metabox da galeria
+     * Callback do metabox de detalhes
      */
-    public function gallery_metabox_callback($post) {
+    public function details_metabox_callback($post) {
         wp_nonce_field('event_gallery_meta', 'event_gallery_meta_nonce');
         
         $gallery_images = get_post_meta($post->ID, '_event_gallery_images', true);
-        $gallery_images = is_array($gallery_images) ? $gallery_images : array();
+        $gallery_array = !empty($gallery_images) ? explode(',', $gallery_images) : array();
         
-        ?>
-        <div id="event-gallery-metabox">
-            <p>
-                <a href="#" id="event-add-gallery-images" class="button button-primary">
-                    <?php _e('Adicionar Imagens à Galeria', 'wp-associates'); ?>
-                </a>
-            </p>
-            
-            <div id="event-gallery-preview" class="event-gallery-grid">
-                <?php if (!empty($gallery_images)): ?>
-                    <?php foreach ($gallery_images as $image_id): ?>
-                        <?php $image_url = wp_get_attachment_image_url($image_id, 'thumbnail'); ?>
-                        <?php if ($image_url): ?>
-                            <div class="event-gallery-item" data-image-id="<?php echo esc_attr($image_id); ?>">
-                                <img src="<?php echo esc_url($image_url); ?>" alt="<?php _e('Imagem do evento', 'wp-associates'); ?>" style="width: 80px; height: 80px; object-fit: cover; border-radius: 4px;">
-                                <button type="button" class="event-remove-image" data-image-id="<?php echo esc_attr($image_id); ?>">
-                                    <?php _e('Remover', 'wp-associates'); ?>
-                                </button>
-                            </div>
-                        <?php endif; ?>
-                    <?php endforeach; ?>
-                <?php endif; ?>
-            </div>
-            
-            <input type="hidden" id="event-gallery-images" name="event_gallery_images" value="<?php echo esc_attr(implode(',', $gallery_images)); ?>">
-            
-            <p class="description">
-                <?php _e('Adicione múltiplas imagens para criar uma galeria do evento.', 'wp-associates'); ?>
-            </p>
-        </div>
+        echo '<div class="event-gallery-container">';
+        echo '<p class="description">' . __('Adicione múltiplas imagens para criar uma galeria do evento.', 'wp-associates') . '</p>';
+        echo '<button type="button" id="event-add-gallery-images" class="button button-primary">';
+        echo __('Adicionar Imagens à Galeria', 'wp-associates');
+        echo '</button>';
         
-        <style>
-        .event-gallery-grid {
+        echo '<input type="hidden" id="event-gallery-images" name="event_gallery_images" value="' . esc_attr($gallery_images) . '">';
+        
+        echo '<div id="event-gallery-preview" class="event-gallery-preview">';
+        
+        if (!empty($gallery_array) && $gallery_array[0] !== '') {
+            foreach ($gallery_array as $image_id) {
+                $image_url = wp_get_attachment_image_url($image_id, 'thumbnail');
+                if ($image_url) {
+                    echo '<div class="event-gallery-item" data-image-id="' . esc_attr($image_id) . '">';
+                    echo '<img src="' . esc_url($image_url) . '" alt="' . __('Imagem da galeria', 'wp-associates') . '">';
+                    echo '<button type="button" class="event-remove-image" data-image-id="' . esc_attr($image_id) . '">×</button>';
+                    echo '</div>';
+                }
+            }
+        }
+        
+        echo '</div>';
+        echo '</div>';
+        
+        // CSS e JavaScript inline para o metabox da galeria
+        echo '<style>
+        .event-gallery-preview {
             display: flex;
             flex-wrap: wrap;
             gap: 10px;
-            margin-top: 10px;
+            margin-top: 15px;
         }
         .event-gallery-item {
             position: relative;
             display: inline-block;
         }
         .event-gallery-item img {
-            border: 2px solid #ddd;
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
             border-radius: 4px;
-        }
-        .event-gallery-item:hover img {
-            border-color: #0073aa;
+            border: 1px solid #ddd;
         }
         .event-remove-image {
             position: absolute;
@@ -140,18 +128,21 @@ class Metabox {
             cursor: pointer;
             font-size: 12px;
             line-height: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         .event-remove-image:hover {
             background: #a00;
         }
-        </style>
+        </style>';
         
-        <script>
+        echo '<script>
         jQuery(document).ready(function($) {
             let galleryFrame;
             
             // Abrir seletor de mídia
-            $('#event-add-gallery-images').on('click', function(e) {
+            $("#event-add-gallery-images").on("click", function(e) {
                 e.preventDefault();
                 
                 if (galleryFrame) {
@@ -160,19 +151,19 @@ class Metabox {
                 }
                 
                 galleryFrame = wp.media({
-                    title: '<?php _e('Selecionar Imagens da Galeria', 'wp-associates'); ?>',
+                    title: "' . __('Selecionar Imagens da Galeria', 'wp-associates') . '",
                     button: {
-                        text: '<?php _e('Adicionar à Galeria', 'wp-associates'); ?>'
+                        text: "' . __('Adicionar à Galeria', 'wp-associates') . '"
                     },
                     multiple: true,
                     library: {
-                        type: 'image'
+                        type: "image"
                     }
                 });
                 
-                galleryFrame.on('select', function() {
-                    const attachments = galleryFrame.state().get('selection').toJSON();
-                    const currentImages = $('#event-gallery-images').val().split(',').filter(id => id !== '');
+                galleryFrame.on("select", function() {
+                    const attachments = galleryFrame.state().get("selection").toJSON();
+                    const currentImages = $("#event-gallery-images").val().split(",").filter(id => id !== "");
                     
                     attachments.forEach(function(attachment) {
                         if (!currentImages.includes(attachment.id.toString())) {
@@ -181,78 +172,32 @@ class Metabox {
                         }
                     });
                     
-                    $('#event-gallery-images').val(currentImages.join(','));
+                    $("#event-gallery-images").val(currentImages.join(","));
                 });
                 
                 galleryFrame.open();
             });
             
             // Remover imagem da galeria
-            $(document).on('click', '.event-remove-image', function() {
-                const imageId = $(this).data('image-id');
-                const currentImages = $('#event-gallery-images').val().split(',').filter(id => id !== '' && id !== imageId);
+            $(document).on("click", ".event-remove-image", function() {
+                const imageId = $(this).data("image-id");
+                const currentImages = $("#event-gallery-images").val().split(",").filter(id => id !== "" && id !== imageId);
                 
-                $('#event-gallery-images').val(currentImages.join(','));
+                $("#event-gallery-images").val(currentImages.join(","));
                 $(this).parent().remove();
             });
             
             function addImageToGallery(attachment) {
-                const imageHtml = `
-                    <div class="event-gallery-item" data-image-id="${attachment.id}">
-                        <img src="${attachment.sizes.thumbnail.url}" alt="<?php _e('Imagem do evento', 'wp-associates'); ?>" style="width: 80px; height: 80px; object-fit: cover; border-radius: 4px;">
-                        <button type="button" class="event-remove-image" data-image-id="${attachment.id}">
-                            <?php _e('Remover', 'wp-associates'); ?>
-                        </button>
-                    </div>
-                `;
-                $('#event-gallery-preview').append(imageHtml);
+                const imageUrl = attachment.sizes && attachment.sizes.thumbnail ? attachment.sizes.thumbnail.url : attachment.url;
+                const galleryItem = $("<div>")
+                    .addClass("event-gallery-item")
+                    .attr("data-image-id", attachment.id)
+                    .html("<img src=\\"" + imageUrl + "\\" alt=\\"" + attachment.alt + "\\"><button type=\\"button\\" class=\\"event-remove-image\\" data-image-id=\\"" + attachment.id + "\\">×</button>");
+                
+                $("#event-gallery-preview").append(galleryItem);
             }
         });
-        </script>
-        <?php
-    }
-    
-    /**
-     * Callback do metabox de detalhes
-     */
-    public function details_metabox_callback($post) {
-        wp_nonce_field('event_details_meta', 'event_details_meta_nonce');
-        
-        $event_date = get_post_meta($post->ID, '_event_date', true);
-        $event_location = get_post_meta($post->ID, '_event_location', true);
-        $event_price = get_post_meta($post->ID, '_event_price', true);
-        
-        ?>
-        <table class="form-table">
-            <tr>
-                <th scope="row">
-                    <label for="event_date"><?php _e('Data do Evento', 'wp-associates'); ?></label>
-                </th>
-                <td>
-                    <input type="date" id="event_date" name="event_date" value="<?php echo esc_attr($event_date); ?>" style="width: 100%;">
-                    <p class="description"><?php _e('Data em que o evento acontecerá.', 'wp-associates'); ?></p>
-                </td>
-            </tr>
-            <tr>
-                <th scope="row">
-                    <label for="event_location"><?php _e('Local do Evento', 'wp-associates'); ?></label>
-                </th>
-                <td>
-                    <input type="text" id="event_location" name="event_location" value="<?php echo esc_attr($event_location); ?>" style="width: 100%;">
-                    <p class="description"><?php _e('Local onde o evento acontecerá.', 'wp-associates'); ?></p>
-                </td>
-            </tr>
-            <tr>
-                <th scope="row">
-                    <label for="event_price"><?php _e('Preço do Evento', 'wp-associates'); ?></label>
-                </th>
-                <td>
-                    <input type="text" id="event_price" name="event_price" value="<?php echo esc_attr($event_price); ?>" style="width: 100%;" placeholder="Ex: R$ 50,00 ou Gratuito">
-                    <p class="description"><?php _e('Preço do evento ou "Gratuito".', 'wp-associates'); ?></p>
-                </td>
-            </tr>
-        </table>
-        <?php
+        </script>';
     }
     
     /**
@@ -304,30 +249,22 @@ class Metabox {
         }
         
         // Salvar galeria de imagens
-        if (isset($_POST['event_gallery_images'])) {
-            $gallery_images = sanitize_text_field($_POST['event_gallery_images']);
-            $gallery_array = !empty($gallery_images) ? explode(',', $gallery_images) : array();
-            $gallery_array = array_filter($gallery_array); // Remove valores vazios
-            
-            update_post_meta($post_id, '_event_gallery_images', $gallery_array);
-        }
-        
-        // Salvar detalhes do evento
-        if (isset($_POST['event_details_meta_nonce']) && wp_verify_nonce($_POST['event_details_meta_nonce'], 'event_details_meta')) {
-            if (isset($_POST['event_date'])) {
-                $event_date = sanitize_text_field($_POST['event_date']);
-                update_post_meta($post_id, '_event_date', $event_date);
-            }
-            
-            if (isset($_POST['event_location'])) {
-                $event_location = sanitize_text_field($_POST['event_location']);
-                update_post_meta($post_id, '_event_location', $event_location);
-            }
-            
-            if (isset($_POST['event_price'])) {
-                $event_price = sanitize_text_field($_POST['event_price']);
-                update_post_meta($post_id, '_event_price', $event_price);
+        if (isset($_POST['event_gallery_meta_nonce']) && wp_verify_nonce($_POST['event_gallery_meta_nonce'], 'event_gallery_meta')) {
+            if (isset($_POST['event_gallery_images'])) {
+                $gallery_images = sanitize_text_field($_POST['event_gallery_images']);
+                update_post_meta($post_id, '_event_gallery_images', $gallery_images);
             }
         }
+    }
+    
+    /**
+     * Altera o placeholder do título
+     */
+    public function change_title_placeholder($title) {
+        $screen = get_current_screen();
+        if ($screen && $screen->post_type === $this->post_type) {
+            $title = __('Adicionar título do Evento', 'wp-associates');
+        }
+        return $title;
     }
 }
