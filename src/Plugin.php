@@ -1,11 +1,12 @@
 <?php
 namespace Associates;
 
-use Associates\PostType;
-use Associates\Taxonomy;
-use Associates\Metabox;
-use Associates\Shortcode;
-use Associates\Assets;
+use Associates\Associates\PostType;
+use Associates\Associates\Taxonomy;
+use Associates\Associates\Metabox;
+use Associates\Associates\Shortcode;
+use Associates\Events\PostType as EventPostType;
+use Associates\Events\Metabox as EventMetabox;
 
 /**
  * Plugin Name: WP Associates
@@ -89,12 +90,15 @@ class Plugin {
      * Inicializa os componentes do plugin
      */
     private function init_components() {
-        // Inicializar componentes essenciais
+        // Inicializar componentes de Associados
         PostType::get_instance();
         Taxonomy::get_instance();
         Metabox::get_instance();
         Shortcode::get_instance();
-        Assets::get_instance();
+        
+        // Inicializar componentes de Eventos
+        EventPostType::get_instance();
+        EventMetabox::get_instance();
     }
     
     
@@ -102,9 +106,10 @@ class Plugin {
      * Ativação do plugin
      */
     public function activate() {
-        // Registrar post type e taxonomia
+        // Registrar post types e taxonomias
         PostType::get_instance()->register_post_type();
         Taxonomy::get_instance()->register_taxonomy_and_terms();
+        EventPostType::get_instance()->register_post_type();
         
         // Flush rewrite rules
         flush_rewrite_rules();

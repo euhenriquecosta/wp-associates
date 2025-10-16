@@ -1,5 +1,5 @@
 <?php
-namespace Associates;
+namespace Associates\Associates;
 
 /**
  * Classe para gerenciar a Taxonomia de Categorias de Associados

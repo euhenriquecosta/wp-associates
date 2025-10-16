@@ -1,10 +1,9 @@
 <?php
-namespace Associates;
+namespace Associates\Associates;
 
 use Associates\Plugin;
-use Associates\Taxonomy;
+use Associates\Associates\Taxonomy;
 use Associates\Municipalities;
-use Associates\Assets;
 
 /**
  * Classe para gerenciar o Shortcode dos Associados
@@ -97,18 +96,19 @@ class Shortcode {
      * Enfileira os assets necessários para o shortcode
      */
     private function enqueue_required_assets() {
-        $assets = Assets::get_instance();
-        
-        // Garantir que os assets do frontend sejam carregados
+        // Leaflet CSS e JS
         wp_enqueue_style('leaflet-css', 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css', array(), '1.9.4');
         wp_enqueue_script('leaflet-js', 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js', array(), '1.9.4', true);
         
-        if ($assets->asset_exists('styles.css')) {
+        // CSS do plugin
+        $plugin = Plugin::get_instance();
+        $css_file = $plugin->get_plugin_path() . 'styles.css';
+        if (file_exists($css_file)) {
             wp_enqueue_style(
                 'wp-associates-css',
-                $assets->get_asset_url('styles.css'),
+                $plugin->get_plugin_url() . 'styles.css',
                 array(),
-                $assets->get_asset_version('styles.css')
+                filemtime($css_file)
             );
         }
     }
