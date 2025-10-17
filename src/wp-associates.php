@@ -3,7 +3,7 @@
  * Plugin Name:       WP Associates
  * Plugin URI:        https://github.com/henriquecosta/wp-associates
  * Description:       Plugin para registrar associados com nome, localização, imagem e filtros interativos com mapa.
- * Version:           2.5
+ * Version:           2.7
  * Requires at least: 5.2
  * Requires PHP:      7.4
  * Author:            Henrique Costa

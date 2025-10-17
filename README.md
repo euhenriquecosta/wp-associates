@@ -103,7 +103,7 @@ src/
 ```
 
 ## Version
-2.5
+2.7
 
 ## Author
 Henrique Costa

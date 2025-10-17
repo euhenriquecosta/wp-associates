@@ -12,7 +12,7 @@ use Associates\Elementor\DynamicTags;
 /**
  * Plugin Name: WP Associates
  * Description: Plugin para registrar associados com nome, localização, imagem e filtros interativos com mapa.
- * Version: 2.5
+ * Version: 2.7
  * Author: Henrique Costa
  * Text Domain: wp-associates
  * Domain Path: /languages
@@ -30,7 +30,7 @@ class Plugin {
     /**
      * Versão do plugin
      */
-    const VERSION = '2.5';
+    const VERSION = '2.7';
     
     /**
      * Instância única do plugin
