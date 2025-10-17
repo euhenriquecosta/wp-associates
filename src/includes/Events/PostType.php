@@ -78,7 +78,7 @@ class PostType {
             'public' => true,
             'has_archive' => false,
             'menu_icon' => 'dashicons-calendar-alt',
-            'menu_position' => 5,
+            'menu_position' => 7,
             'supports' => array('title', 'thumbnail'),
             'show_in_rest' => true,
             'rewrite' => false,
