@@ -18,7 +18,7 @@ services:
       - MEMORY_LIMIT=256M
     volumes:
       - wordpress_data:/var/www/html
-      - ./src:/var/www/html/wp-content/plugins/wp-associates
+      - ./dist:/var/www/html/wp-content/plugins/wp-associates
       - ./php.ini:/usr/local/etc/php/conf.d/uploads.ini
     depends_on:
       - db

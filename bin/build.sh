@@ -29,6 +29,16 @@ composer install --no-dev --optimize-autoloader
 echo "📋 Copiando arquivos do plugin..."
 cp -r src/* dist/
 
+# Copiar composer.json correto para dist
+echo "📋 Copiando composer.json..."
+cp composer.json dist/composer.json
+
+# Regenerar autoloader na pasta dist
+echo "🔄 Regenerando autoloader..."
+cd dist
+composer dump-autoload --no-dev --optimize
+cd ..
+
 # Copiar vendor para pasta temporária
 echo "📦 Copiando dependências..."
 cp -r vendor dist/vendor

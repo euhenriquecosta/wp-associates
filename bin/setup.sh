@@ -2,6 +2,9 @@
 
 sleep 2
 
+echo "> Buildando plugin..."
+bin/build.sh
+
 echo "> Resetando banco de dados..."
 docker exec wordpress wp db reset --yes --allow-root 2>/dev/null
 
@@ -86,6 +89,36 @@ docker exec wordpress wp plugin activate advanced-custom-fields --allow-root 2>/
 echo "> Instalando tema Hello Elementor..."
 docker exec wordpress wp theme install hello-elementor --activate --allow-root 2>/dev/null
 docker exec wordpress wp theme delete twentytwentyone twentytwentytwo twentytwentythree twentytwentyfour --allow-root 2>/dev/null
+
+echo "> Criando Landing Page..."
+# Criar a página
+PAGE_ID=$(docker exec wordpress wp post create --post_type=page --post_title="Associação Queijo Baiano" --post_name="associacao-queijo-baiano" --post_status=publish --post_content="" --allow-root --porcelain 2>/dev/null)
+
+if [ ! -z "$PAGE_ID" ]; then
+    echo "> Página criada com ID: $PAGE_ID"
+    
+    # Aguardar Elementor carregar completamente
+    sleep 5
+    
+    echo "> Configurando página como Elementor Canvas..."
+    # Configurar como Elementor Canvas
+    docker exec wordpress wp post meta set $PAGE_ID _elementor_template_type page --allow-root 2>/dev/null
+    docker exec wordpress wp post meta set $PAGE_ID _elementor_edit_mode builder --allow-root 2>/dev/null
+    docker exec wordpress wp post meta set $PAGE_ID _elementor_template_type page --allow-root 2>/dev/null
+    
+    echo "> Importando template da Landing Page..."
+    # Importar template
+    docker exec wordpress wp elementor import /var/www/html/wp-content/plugins/wp-associates/templates/lp.json --allow-root 2>/dev/null || echo "Template não importado automaticamente - será necessário importar manualmente"
+    
+    echo "> Aplicando template à página..."
+    # Aplicar template à página (isso pode precisar ser feito manualmente no Elementor)
+    echo "   Para aplicar o template:"
+    echo "   1. Acesse: http://localhost:8080/wp-admin/post.php?post=$PAGE_ID&action=elementor"
+    echo "   2. Clique em 'Import Template'"
+    echo "   3. Selecione o arquivo lp.json"
+else
+    echo "❌ Erro ao criar a página"
+fi
 
 echo "> Aplicando permissões corretas aos plugins..."
 docker exec wordpress find /var/www/html/wp-content/plugins -type d -exec chmod 755 {} \; 2>/dev/null

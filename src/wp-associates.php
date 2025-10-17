@@ -24,8 +24,6 @@ define('WPA_PLUGIN_URL', untrailingslashit(plugins_url('/', WPA_PLUGIN_FILE)));
 // Carregar autoloader do Composer
 $autoload_paths = array(
     WPA_PLUGIN_PATH . '/vendor/autoload.php',  // Para distribuição
-    dirname(WPA_PLUGIN_PATH) . '/vendor/autoload.php',  // Para desenvolvimento
-    dirname(dirname(WPA_PLUGIN_PATH)) . '/vendor/autoload.php'  // Para Docker
 );
 
 $autoloader_loaded = false;
@@ -37,20 +35,9 @@ foreach ($autoload_paths as $path) {
     }
 }
 
-// Se o autoloader não foi carregado, usar autoloader simples
+// Verificar se o autoloader foi carregado
 if (!$autoloader_loaded) {
-    spl_autoload_register(function ($class) {
-        // Namespace Associates
-        if (strpos($class, 'Associates\\') === 0) {
-            $class_file = str_replace('Associates\\', '', $class);
-            $class_file = str_replace('\\', '/', $class_file);
-            $file_path = WPA_PLUGIN_PATH . '/includes/' . $class_file . '.php';
-            
-            if (file_exists($file_path)) {
-                require_once $file_path;
-            }
-        }
-    });
+    wp_die('Erro: Autoloader do Composer não encontrado. Execute "composer install" no diretório do plugin.');
 }
 
 // Incluir o arquivo principal do plugin
@@ -58,7 +45,6 @@ require_once WPA_PLUGIN_PATH . '/includes/Plugin.php';
 
 // Verificar se a classe existe e inicializar
 if (class_exists('Associates\Plugin')) {
-    
     /**
      * Função helper para acessar a instância do plugin
      */
