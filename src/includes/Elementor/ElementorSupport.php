@@ -29,7 +29,24 @@ class ElementorSupport {
      * Construtor privado para implementar Singleton
      */
     private function __construct() {
-        // Inicialização simplificada - apenas Dynamic Tags
+        add_action('elementor/init', array($this, 'init_elementor_support'));
+    }
+    
+    /**
+     * Inicializa o suporte ao Elementor
+     */
+    public function init_elementor_support() {
+        // Adicionar suporte para CPTs no Elementor
+        add_action('init', array($this, 'add_elementor_support'), 20);
+    }
+    
+    /**
+     * Adiciona suporte do Elementor aos CPTs customizados
+     */
+    public function add_elementor_support() {
+        // Adicionar suporte do Elementor aos CPTs
+        add_post_type_support('associate', 'elementor');
+        add_post_type_support('event', 'elementor');
     }
     
     

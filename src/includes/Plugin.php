@@ -8,6 +8,7 @@ use Associates\Associates\Shortcode;
 use Associates\Events\PostType as EventPostType;
 use Associates\Events\Metabox as EventMetabox;
 use Associates\Elementor\DynamicTags;
+use Associates\Elementor\ElementorSupport;
 
 /**
  * Plugin Name: WP Associates
@@ -104,6 +105,7 @@ class Plugin {
         // Inicializar integração com Elementor
         if (did_action('elementor/loaded')) {
             DynamicTags::get_instance();
+            ElementorSupport::get_instance();
         }
     }
     
