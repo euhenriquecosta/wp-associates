@@ -1,7 +1,14 @@
 .DS_Store
-.env
-/vendor/
-composer.lock
-/.build/
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Build
 *.zip
-/wp-content/
+dist/
+build/
+vendor/
