@@ -1,81 +1,109 @@
-# Plugin WP Associates - WordPress
+# WP Associates Plugin
 
-Plugin para registrar associados com mapa interativo usando Leaflet.
+Plugin WordPress para registrar associados com nome, localização, imagem e filtros interativos com mapa.
 
-## 🚀 Desenvolvimento Local (Docker)
+## Estrutura do Plugin
 
-### Iniciar o ambiente:
-```bash
-composer dev
+Este plugin foi refatorado seguindo as melhores práticas de desenvolvimento WordPress com Programação Orientada a Objetos (POO).
+
+### Arquivos Principais
+
+- `src/index.php` - Arquivo principal do plugin
+- `src/Plugin.php` - Classe principal do plugin
+- `src/Autoload.php` - Autoloader para carregamento automático das classes
+
+### Estrutura de Classes
+
+#### Core Classes
+- `WP_Associates_Plugin` - Classe principal que gerencia todo o plugin
+- `WP_Associates_Autoloader` - Autoloader para carregamento automático
+
+#### Functional Classes
+- `WP_Associates_PostType` - Gerencia o custom post type 'associate'
+- `WP_Associates_Taxonomy` - Gerencia a taxonomia de categorias
+- `WP_Associates_Metabox` - Gerencia os metaboxes do admin
+- `WP_Associates_Shortcode` - Gerencia o shortcode [wp-associates]
+- `WP_Associates_Assets` - Gerencia scripts e estilos
+- `WP_Associates_Municipalities` - Gerencia a lista de municípios da Bahia
+
+#### Context Classes
+- `WP_Associates_Admin` - Funcionalidades específicas do admin
+- `WP_Associates_Public` - Funcionalidades específicas do frontend
+
+## Funcionalidades
+
+### Custom Post Type
+- Post type 'associate' para registrar associados
+- Suporte a thumbnail e título
+- Interface amigável no admin
+
+### Taxonomia
+- Taxonomia 'associate_category' para categorizar associados
+- Termos padrão pré-definidos
+- Interface de gerenciamento no admin
+
+### Metaboxes
+- Metabox para informações do associado (descrição e município)
+- Metabox para fotos adicionais
+- Upload múltiplo de imagens
+
+### Shortcode
+- Shortcode `[wp-associates]` para exibir o mapa interativo
+- Filtros por nome, município e categoria
+- Mapa com marcadores dos associados
+- Modal com informações detalhadas
+
+### Assets
+- Carregamento automático de scripts e estilos
+- Versionamento baseado em filemtime
+- Separação entre assets do admin e frontend
+
+## Uso
+
+### Instalação
+1. Faça upload do plugin para o diretório `/wp-content/plugins/`
+2. Ative o plugin no admin do WordPress
+
+### Uso do Shortcode
+Adicione o shortcode `[wp-associates]` em qualquer página ou post para exibir o mapa interativo dos associados.
+
+### Gerenciamento
+- Acesse "Associados" no menu admin para gerenciar associados
+- Use "Categorias" para gerenciar as categorias de associados
+
+## Desenvolvimento
+
+### Padrões Seguidos
+- Programação Orientada a Objetos (POO)
+- Padrão Singleton para classes principais
+- Autoloader para carregamento automático
+- Hooks do WordPress apropriados
+- Sanitização e validação de dados
+- Internacionalização (i18n)
+
+### Estrutura de Arquivos
+```
+src/
+├── index.php              # Arquivo principal
+├── Plugin.php             # Classe principal
+├── Autoload.php           # Autoloader
+├── includes/              # Classes funcionais
+│   ├── PostType.php
+│   ├── Taxonomy.php
+│   ├── Metabox.php
+│   ├── Shortcode.php
+│   ├── Assets.php
+│   ├── Admin.php
+│   ├── Public.php
+│   └── Municipalities.php
+├── assets/                # Recursos estáticos
+│   └── avatar.png
+├── script.js              # JavaScript do admin
+└── styles.css             # Estilos do plugin
 ```
 
-### Acessos:
-- **URL:** http://localhost:8080
-- **Admin:** http://localhost:8080/wp-admin
-- **Usuário:** admin
-- **Senha:** admin
+## Version
+2.7
 
-### Outros comandos:
-```bash
-composer start   # Iniciar containers
-composer stop    # Parar containers  
-composer restart # Reiniciar containers
-composer logs    # Ver logs do WordPress
-composer build   # Gerar ZIP do plugin
-```
-
-### Edição em tempo real:
-O plugin está montado como volume, então você pode editar os arquivos diretamente:
-- `index.php` - Plugin principal
-- `styles.css` - Estilos
-- `script.js` - JavaScript do autocomplete
-
-As mudanças são refletidas imediatamente no WordPress (apenas recarregue a página).
-
-### Parar o ambiente:
-```bash
-docker compose down
-```
-
-### Limpar dados (cuidado!):
-```bash
-docker compose down -v
-```
-
-## 📦 Gerar ZIP para Produção
-
-Para criar um arquivo ZIP do plugin (pronto para instalar em qualquer WordPress):
-
-```bash
-composer build
-```
-
-Isso vai gerar o arquivo `associados-interativo.zip` contendo apenas os arquivos necessários:
-- ✅ `index.php`
-- ✅ `styles.css`
-- ✅ `script.js`
-- ✅ `placeholder.png` (se existir)
-
-**Arquivos ignorados no ZIP:**
-- ❌ `.git/`
-- ❌ `vendor/`
-- ❌ `docker compose.yml`
-- ❌ `composer.json`
-- ❌ `.vscode/`
-- ❌ `.gitignore`
-- ❌ `README.md`
-- ❌ Scripts de build
-
-## 📝 Como usar o plugin
-
-1. Instale e ative o plugin
-2. Vá em **Associados** no menu lateral
-3. Adicione novos associados com:
-   - Nome
-   - Função
-   - Localização (com autocomplete)
-   - Estado
-   - Imagem destacada
-   - Categorias
-4. Crie uma página e adicione o shortcode: `[wp-associates]`
-5. Visualize a página para ver o mapa interativo!
+## Author
+Henrique Costa

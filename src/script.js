@@ -59,47 +59,47 @@ jQuery(document).ready(function ($) {
         }
     });
 
-    // Funcionalidade para fotos de eventos
-    let eventPhotosFrame;
-    let eventPhotos = [];
+    // Funcionalidade para fotos
+    let photosFrame;
+    let photos = [];
 
     // Inicializar fotos existentes
-    function initEventPhotos() {
-        let $input = $('#associates-event-photos-input');
+    function initPhotos() {
+        let $input = $('#associates-photos-input');
         if ($input.length && $input.val()) {
-            eventPhotos = $input.val().split(',').filter(id => id !== '');
+            photos = $input.val().split(',').filter(id => id !== '');
         }
     }
 
     // Atualizar input hidden
-    function updateEventPhotosInput() {
-        $('#associates-event-photos-input').val(eventPhotos.join(','));
+    function updatePhotosInput() {
+        $('#associates-photos-input').val(photos.join(','));
     }
 
     // Adicionar foto
-    function addEventPhoto(photoId, photoUrl) {
-        if (eventPhotos.indexOf(photoId.toString()) === -1) {
-            eventPhotos.push(photoId.toString());
+    function addPhoto(photoId, photoUrl) {
+        if (photos.indexOf(photoId.toString()) === -1) {
+            photos.push(photoId.toString());
             
-            let $preview = $('#associates-event-photos-preview');
-            let $photoItem = $('<div class="associates-event-photo-item" data-photo-id="' + photoId + '" style="position: relative; display: inline-block; margin: 2px;">');
-            $photoItem.append('<img src="' + photoUrl + '" alt="Foto de evento" style="width: 60px; height: 60px; object-fit: cover; border-radius: 4px;">');
-            $photoItem.append('<button type="button" class="associates-remove-event-photo" style="position: absolute; top: -5px; right: -5px; background: red; color: white; border: none; border-radius: 50%; width: 20px; height: 20px; cursor: pointer; font-size: 12px;">×</button>');
+            let $preview = $('#associates-photos-preview');
+            let $photoItem = $('<div class="associates-photo-item" data-photo-id="' + photoId + '" style="position: relative; display: inline-block; margin: 2px;">');
+            $photoItem.append('<img src="' + photoUrl + '" alt="Foto" style="width: 60px; height: 60px; object-fit: cover; border-radius: 4px;">');
+            $photoItem.append('<button type="button" class="associates-remove-photo" style="position: absolute; top: -5px; right: -5px; background: red; color: white; border: none; border-radius: 50%; width: 20px; height: 20px; cursor: pointer; font-size: 12px;">×</button>');
             
             $preview.append($photoItem);
-            updateEventPhotosInput();
+            updatePhotosInput();
         }
     }
 
     // Remover foto
-    function removeEventPhoto(photoId) {
-        eventPhotos = eventPhotos.filter(id => id !== photoId.toString());
-        $('.associates-event-photo-item[data-photo-id="' + photoId + '"]').remove();
-        updateEventPhotosInput();
+    function removePhoto(photoId) {
+        photos = photos.filter(id => id !== photoId.toString());
+        $('.associates-photo-item[data-photo-id="' + photoId + '"]').remove();
+        updatePhotosInput();
     }
 
     // Event listener para adicionar fotos
-    $('#associates-add-event-photos').on('click', function(e) {
+    $('#associates-add-photos').on('click', function(e) {
         e.preventDefault();
         
         // Verificar se wp.media está disponível
@@ -109,8 +109,8 @@ jQuery(document).ready(function ($) {
         }
         
         // Criar frame de mídia com configuração simples
-        eventPhotosFrame = wp.media({
-            title: 'Selecionar Fotos de Eventos',
+        photosFrame = wp.media({
+            title: 'Selecionar Fotos',
             button: {
                 text: 'Adicionar Fotos'
             },
@@ -121,27 +121,27 @@ jQuery(document).ready(function ($) {
         });
 
         // Evento quando uma seleção é feita
-        eventPhotosFrame.on('select', function() {
-            let selection = eventPhotosFrame.state().get('selection');
+        photosFrame.on('select', function() {
+            let selection = photosFrame.state().get('selection');
             if (selection && selection.length > 0) {
                 selection.map(function(attachment) {
                     let attachmentData = attachment.toJSON();
-                    addEventPhoto(attachmentData.id, attachmentData.url);
+                    addPhoto(attachmentData.id, attachmentData.url);
                 });
             }
         });
 
         // Abrir o frame
-        eventPhotosFrame.open();
+        photosFrame.open();
     });
 
     // Event listener para remover fotos
-    $(document).on('click', '.associates-remove-event-photo', function(e) {
+    $(document).on('click', '.associates-remove-photo', function(e) {
         e.preventDefault();
-        let photoId = $(this).closest('.associates-event-photo-item').data('photo-id');
-        removeEventPhoto(photoId);
+        let photoId = $(this).closest('.associates-photo-item').data('photo-id');
+        removePhoto(photoId);
     });
 
     // Inicializar
-    initEventPhotos();
+    initPhotos();
 });

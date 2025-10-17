@@ -2,11 +2,26 @@
   "name": "associados/plugin",
   "description": "Plugin para registrar associados com mapa interativo",
   "type": "wordpress-plugin",
+  "autoload": {
+    "psr-4": {
+      "Associates\\": "includes/"
+    }
+  },
+  "repositories": [
+    {
+      "type": "composer",
+      "url": "https://wpackagist.org"
+    }
+  ],
   "require": {
-    "php": ">=8.1"
+    "php": ">=8.1",
+    "wpackagist-plugin/advanced-custom-fields": "*"
   },
   "config": {
-    "process-timeout": 0
+    "process-timeout": 0,
+    "allow-plugins": {
+      "composer/installers": true
+    }
   },
   "scripts": {
     "build": "bin/build.sh",
@@ -19,6 +34,8 @@
     "logs": "docker compose logs -f wordpress"
   },
   "require-dev": {
-    "php-stubs/wordpress-stubs": "^6.0"
+    "php-stubs/wordpress-stubs": "^6.0",
+    "szepeviktor/phpstan-wordpress": "^2.0",
+    "php-stubs/acf-pro-stubs": "^6.5"
   }
 }

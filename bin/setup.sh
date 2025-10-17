@@ -80,6 +80,9 @@ docker exec wordpress wp plugin install query-monitor user-switching --activate 
 echo "> Ativando plugin WP Associates..."
 docker exec wordpress wp plugin activate wp-associates --allow-root 2>/dev/null
 
+echo "> Ativando Advanced Custom Fields..."
+docker exec wordpress wp plugin activate advanced-custom-fields --allow-root 2>/dev/null
+
 echo "> Instalando tema Hello Elementor..."
 docker exec wordpress wp theme install hello-elementor --activate --allow-root 2>/dev/null
 docker exec wordpress wp theme delete twentytwentyone twentytwentytwo twentytwentythree twentytwentyfour --allow-root 2>/dev/null
