@@ -58,8 +58,8 @@ class Plugin {
      * Construtor privado para implementar Singleton
      */
     private function __construct() {
-        $this->plugin_path = defined('WPA_PLUGIN_PATH') ? WPA_PLUGIN_PATH . '/src/' : plugin_dir_path(__FILE__);
-        $this->plugin_url = defined('WPA_PLUGIN_URL') ? WPA_PLUGIN_URL . '/src/' : plugin_dir_url(__FILE__);
+        $this->plugin_path = defined('WPA_PLUGIN_PATH') ? WPA_PLUGIN_PATH . '/' : plugin_dir_path(__FILE__);
+        $this->plugin_url = defined('WPA_PLUGIN_URL') ? WPA_PLUGIN_URL . '/' : plugin_dir_url(__FILE__);
         $this->plugin_name = 'wp-associates';
         
         $this->init_hooks();

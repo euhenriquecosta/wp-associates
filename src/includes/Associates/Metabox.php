@@ -68,14 +68,6 @@ class Metabox {
             'default'
         );
         
-        add_meta_box(
-            'associates_photos',
-            __('Fotos', 'wp-associates'),
-            array($this, 'photos_metabox_callback'),
-            $this->post_type,
-            'side',
-            'default'
-        );
     }
     
     /**
@@ -119,44 +111,6 @@ class Metabox {
         echo '</table>';
     }
     
-    /**
-     * Callback para o metabox de fotos
-     */
-    public function photos_metabox_callback($post) {
-        // Verificar se o usuário tem permissão para fazer upload
-        if (!current_user_can('upload_files')) {
-            echo '<p><em>' . __('Você não tem permissão para fazer upload de arquivos.', 'wp-associates') . '</em></p>';
-            return;
-        }
-        
-        $photos = get_post_meta($post->ID, '_wpa_photos', true);
-        if (!is_array($photos)) {
-            $photos = array();
-        }
-        
-        wp_nonce_field('associates_save_photos', 'associates_photos_nonce');
-        
-        echo '<div id="associates-photos-container">';
-        echo '<p><a href="#" id="associates-add-photos" class="button">' . __('Adicionar fotos', 'wp-associates') . '</a></p>';
-        echo '<div id="associates-photos-preview">';
-        
-        if (!empty($photos)) {
-            foreach ($photos as $photo_id) {
-                $photo_url = wp_get_attachment_image_url($photo_id, 'thumbnail');
-                if ($photo_url) {
-                    echo '<div class="associates-photo-item" data-photo-id="' . esc_attr($photo_id) . '">';
-                    echo '<img src="' . esc_url($photo_url) . '" alt="' . __('Foto', 'wp-associates') . '" style="width: 60px; height: 60px; object-fit: cover; border-radius: 4px; margin: 2px;">';
-                    echo '<button type="button" class="associates-remove-photo" style="position: absolute; top: -5px; right: -5px; background: red; color: white; border: none; border-radius: 50%; width: 20px; height: 20px; cursor: pointer; font-size: 12px;">×</button>';
-                    echo '</div>';
-                }
-            }
-        }
-        
-        echo '</div>';
-        echo '<input type="hidden" id="associates-photos-input" name="associates_photos" value="' . esc_attr(implode(',', $photos)) . '">';
-        echo '<p><small>' . __('Clique em "Adicionar fotos" para selecionar imagens da biblioteca de mídia ou fazer upload de novas imagens.', 'wp-associates') . '</small></p>';
-        echo '</div>';
-    }
     
     /**
      * Enfileira os assets do admin
@@ -195,16 +149,6 @@ class Metabox {
                 );
             }
             
-            // Adicionar variáveis JavaScript para o admin
-            wp_localize_script('wp-associates-admin-js', 'wpAssociatesAdmin', array(
-                'ajaxUrl' => admin_url('admin-ajax.php'),
-                'nonce' => wp_create_nonce('wp_associates_admin_nonce'),
-                'strings' => array(
-                    'selectImages' => __('Selecionar Fotos', 'wp-associates'),
-                    'addImages' => __('Adicionar Fotos', 'wp-associates'),
-                    'removeImage' => __('Remover foto', 'wp-associates'),
-                ),
-            ));
         }
     }
     
@@ -247,18 +191,6 @@ class Metabox {
             }
         }
         
-        // Salvar fotos
-        if (isset($_POST['associates_photos']) && wp_verify_nonce($_POST['associates_photos_nonce'], 'associates_save_photos')) {
-            $photos = sanitize_text_field($_POST['associates_photos']);
-            $photo_ids = array();
-            
-            if (!empty($photos)) {
-                $photo_ids = array_map('intval', explode(',', $photos));
-                $photo_ids = array_filter($photo_ids); // Remove valores vazios
-            }
-            
-            update_post_meta($post_id, '_wpa_photos', $photo_ids);
-        }
     }
     
     /**
