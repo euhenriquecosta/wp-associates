@@ -7,8 +7,6 @@ parameters:
         - src
     excludePaths:
         - src/includes/Elementor/
-    ignoreErrors:
-        - '#Call to static method get_instance\(\) on an unknown class Associates\\Elementor\\DynamicTags#'
-        - '#Call to static method get_instance\(\) on an unknown class Associates\\Elementor\\ElementorSupport#'
+    ignoreErrors: []
     bootstrapFiles:
         - vendor/php-stubs/wordpress-stubs/wordpress-stubs.php

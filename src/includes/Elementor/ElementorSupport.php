@@ -44,9 +44,7 @@ class ElementorSupport {
      * Adiciona suporte do Elementor aos CPTs customizados
      */
     public function add_elementor_support() {
-        // Adicionar suporte do Elementor aos CPTs
-        add_post_type_support('associate', 'elementor');
-        add_post_type_support('event', 'elementor');
+        
     }
     
     

@@ -1,12 +1,13 @@
 <?php
 namespace Associates;
 
-use Associates\Associates\PostType;
-use Associates\Associates\Taxonomy;
-use Associates\Associates\Metabox;
-use Associates\Associates\Shortcode;
+use Associates\Associates\PostType as AssociatesPostType;
+use Associates\Associates\Taxonomy as AssociatesTaxonomy;
+use Associates\Associates\Metabox as AssociatesMetabox;
+use Associates\Associates\Shortcode as AssociatesShortcode;
 use Associates\Events\PostType as EventPostType;
 use Associates\Events\Metabox as EventMetabox;
+use Associates\Events\Shortcode as EventShortcode;
 use Associates\Elementor\DynamicTags;
 use Associates\Elementor\ElementorSupport;
 
@@ -93,14 +94,15 @@ class Plugin {
      */
     private function init_components() {
         // Inicializar componentes de Associados
-        PostType::get_instance();
-        Taxonomy::get_instance();
-        Metabox::get_instance();
-        Shortcode::get_instance();
+        AssociatesPostType::get_instance();
+        AssociatesTaxonomy::get_instance();
+        AssociatesMetabox::get_instance();
+        AssociatesShortcode::get_instance();
         
         // Inicializar componentes de Eventos
         EventPostType::get_instance();
         EventMetabox::get_instance();
+        EventShortcode::get_instance();
         
         // Inicializar integração com Elementor
         if (did_action('elementor/loaded')) {
@@ -115,8 +117,8 @@ class Plugin {
      */
     public function activate() {
         // Registrar post types e taxonomias
-        PostType::get_instance()->register_post_type();
-        Taxonomy::get_instance()->register_taxonomy_and_terms();
+        AssociatesPostType::get_instance()->register_post_type();
+        AssociatesTaxonomy::get_instance()->register_taxonomy_and_terms();
         EventPostType::get_instance()->register_post_type();
         
         // Flush rewrite rules
