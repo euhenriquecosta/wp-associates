@@ -1,15 +1,29 @@
 /* styles.css - estilo principal do plugin WP Associates */
 
+/* Isolamento completo do plugin */
+.wp-associates-plugin {
+    isolation: isolate;
+    contain: layout style;
+    position: relative;
+    z-index: 1;
+}
+
+/* Reset para evitar conflitos */
+.wp-associates-plugin * {
+    box-sizing: border-box;
+}
+
 /* filtros */
-.associates-filters {
+.wp-associates-plugin .associates-filters {
     display: flex;
     gap: 10px;
     flex-wrap: wrap;
     margin-bottom: 18px;
     align-items: center;
 }
-.associates-filters input[type="text"],
-.associates-filters select {
+
+.wp-associates-plugin .associates-filters input[type="text"],
+.wp-associates-plugin .associates-filters select {
     padding: 10px 12px;
     border-radius: 6px;
     border: 1px solid #dcdcdc;
@@ -20,7 +34,7 @@
 }
 
 /* Remove aparência padrão do Safari e customiza select */
-.associates-filters select {
+.wp-associates-plugin .associates-filters select {
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
@@ -33,20 +47,21 @@
 }
 
 /* Remove sombras e gradientes do Safari */
-.associates-filters input[type="text"],
-.associates-filters select {
+.wp-associates-plugin .associates-filters input[type="text"],
+.wp-associates-plugin .associates-filters select {
     -webkit-box-shadow: none;
     box-shadow: none;
 }
 
-.associates-filters input[type="text"]:focus,
-.associates-filters select:focus {
+.wp-associates-plugin .associates-filters input[type="text"]:focus,
+.wp-associates-plugin .associates-filters select:focus {
     outline: none;
     border-color: #999;
     -webkit-box-shadow: none;
     box-shadow: none;
 }
-.associates-filters button {
+
+.wp-associates-plugin .associates-filters button {
     background: red;
     color: white;
     padding: 10px 14px;
@@ -56,10 +71,13 @@
     font-weight: 600;
     white-space: nowrap;
 }
-.associates-filters button:hover { opacity:0.95; }
+
+.wp-associates-plugin .associates-filters button:hover { 
+    opacity: 0.95; 
+}
 
 /* pai - lista e mapa lado a lado */
-.associates-parent-div {
+.wp-associates-plugin .associates-parent-div {
     display: flex;
     gap: 30px;
     align-items: flex-start;
@@ -67,7 +85,7 @@
 }
 
 /* container lista */
-.associates-list {
+.wp-associates-plugin .associates-list {
     width: 400px;
     max-width: 100%;
     height: 350px;
@@ -77,16 +95,16 @@
     padding-right: 8px;
 }
 
-.associates-list > .associate {
+.wp-associates-plugin .associates-list > .associate {
     margin-bottom: 16px;
 }
 
-.associates-list > .associate:last-child {
+.wp-associates-plugin .associates-list > .associate:last-child {
     margin-bottom: 0;
 }
 
-/* card do associado (estilo semelhante ao que enviou) */
-.associate {
+/* card do associado */
+.wp-associates-plugin .associate {
     background: #fff;
     border-radius: 12px;
     box-shadow: 0 6px 18px rgba(0,0,0,0.06);
@@ -95,20 +113,22 @@
     cursor: pointer;
     overflow: hidden;
 }
-.associate:hover {
+
+.wp-associates-plugin .associate:hover {
     transform: translateY(-6px);
-    box-shadow:0 12px 30px rgba(0,0,0,0.09);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.09);
 }
 
 /* mini-thumb circular */
-.associate-thumb {
+.wp-associates-plugin .associate-thumb {
     width: 84px;
     height: 84px;
     overflow: hidden;
     border-radius: 50%;
     margin-bottom: 8px;
 }
-.associate-thumb img {
+
+.wp-associates-plugin .associate-thumb img {
     width: 100%;
     height: 100%;
     object-fit: cover;
@@ -117,71 +137,106 @@
 }
 
 /* textos do card */
-.associate h3 { margin: 6px 0 2px; font-size:16px; }
-.associate .associates-description,
-.associate .associates-description-short,
-.associate .associates-description-full { 
+.wp-associates-plugin .associate h3 { 
+    margin: 6px 0 2px; 
+    font-size: 16px; 
+}
+
+.wp-associates-plugin .associate .associates-description,
+.wp-associates-plugin .associate .associates-description-short,
+.wp-associates-plugin .associate .associates-description-full { 
     font-size: 12px; 
-    color:#777; 
+    color: #777; 
     margin: 0 0 4px;
     line-height: 1.4;
 }
-.associate .associates-local { font-size: 12px; color:#9aa; margin: 0; }
+
+.wp-associates-plugin .associate .associates-local { 
+    font-size: 12px; 
+    color: #9aa; 
+    margin: 0; 
+}
 
 /* botão leia mais */
-.associate .associates-read-more {
-    background: none !important;
-    border: none !important;
-    color: #0073aa !important;
-    font-size: 11px !important;
+.wp-associates-plugin .associate .associates-read-more {
+    background: none;
+    border: none;
+    color: #0073aa;
+    font-size: 11px;
     cursor: pointer;
-    padding: 0 !important;
+    padding: 0;
     margin: 2px 0 4px 0;
-    text-decoration: none !important;
-    font-weight: normal !important;
-    white-space: normal !important;
-    border-radius: 0 !important;
+    text-decoration: none;
+    font-weight: normal;
+    white-space: normal;
+    border-radius: 0;
 }
-.associate .associates-read-more:hover {
-    color: #005177 !important;
-    background: none !important;
+
+.wp-associates-plugin .associate .associates-read-more:hover {
+    color: #005177;
+    background: none;
 }
 
 /* icone de marker (divicon) */
-.associates-marker-wrapper { /* classe do divIcon container (Leaflet) */
+.wp-associates-plugin .associates-marker-wrapper {
     background: transparent;
 }
-.associates-marker-icon {
+
+.wp-associates-plugin .associates-marker-icon {
     width: 36px;
     height: 36px;
-    border-radius:50%;
-    overflow:hidden;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    box-shadow:0 1px 4px rgba(0,0,0,0.4);
-    border:1.5px solid white;
+    border-radius: 50%;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.4);
+    border: 1.5px solid white;
 }
-.associates-marker-icon img {
-    width:100% !important;
-    height:100% !important;
-    object-fit:cover !important;
-    display:block !important;
-    border-radius:50% !important;
-    max-width:100% !important;
-    max-height:100% !important;
+
+.wp-associates-plugin .associates-marker-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    border-radius: 50%;
+    max-width: 100%;
+    max-height: 100%;
 }
 
 /* popup estilo */
-.associates-popup { text-align:center; width:220px; }
-.associates-popup img { width:80px; height:80px; object-fit:cover; border-radius:8px; display:block; margin:6px auto; }
-.associates-popup h4 { margin:6px 0 4px; font-size:15px; }
-.associates-popup .associates-popup-description { font-size:12px; color:#555; margin-bottom:4px; }
-.associates-popup .associates-popup-local { font-size:12px; color:#888; }
+.wp-associates-plugin .associates-popup { 
+    text-align: center; 
+    width: 220px; 
+}
 
+.wp-associates-plugin .associates-popup img { 
+    width: 80px; 
+    height: 80px; 
+    object-fit: cover; 
+    border-radius: 8px; 
+    display: block; 
+    margin: 6px auto; 
+}
+
+.wp-associates-plugin .associates-popup h4 { 
+    margin: 6px 0 4px; 
+    font-size: 15px; 
+}
+
+.wp-associates-plugin .associates-popup .associates-popup-description { 
+    font-size: 12px; 
+    color: #555; 
+    margin-bottom: 4px; 
+}
+
+.wp-associates-plugin .associates-popup .associates-popup-local { 
+    font-size: 12px; 
+    color: #888; 
+}
 
 /* Modal do associado */
-.associates-modal {
+.wp-associates-plugin .associates-modal {
     position: fixed;
     z-index: 10000;
     left: 0;
@@ -196,11 +251,11 @@
     box-sizing: border-box;
 }
 
-.associates-modal.show {
-    display: flex !important;
+.wp-associates-plugin .associates-modal.show {
+    display: flex;
 }
 
-.associates-modal-content {
+.wp-associates-plugin .associates-modal-content {
     background-color: white;
     border-radius: 12px;
     padding: 0;
@@ -214,7 +269,7 @@
     transform: none;
 }
 
-.associates-modal-close {
+.wp-associates-plugin .associates-modal-close {
     position: absolute;
     top: 15px;
     right: 20px;
@@ -226,11 +281,11 @@
     line-height: 1;
 }
 
-.associates-modal-close:hover {
+.wp-associates-plugin .associates-modal-close:hover {
     color: #000;
 }
 
-.associates-modal-header {
+.wp-associates-plugin .associates-modal-header {
     display: flex;
     align-items: center;
     padding: 30px 30px 20px 30px;
@@ -238,15 +293,15 @@
     gap: 20px;
 }
 
-.associates-modal-image {
+.wp-associates-plugin .associates-modal-image {
     width: 80px;
     height: 80px;
     border-radius: 50%;
-     overflow: hidden;
+    overflow: hidden;
     flex-shrink: 0;
 }
 
-.associates-modal-image img {
+.wp-associates-plugin .associates-modal-image img {
     width: 100%;
     height: 100%;
     object-fit: cover;
@@ -254,73 +309,72 @@
     border-radius: 0;
 }
 
-
-.associates-modal-info {
+.wp-associates-plugin .associates-modal-info {
     flex: 1;
 }
 
-.associates-modal-info h3 {
+.wp-associates-plugin .associates-modal-info h3 {
     margin: 0 0 8px 0;
     font-size: 24px;
     color: #333;
     line-height: 1.3;
 }
 
-.associates-modal-location {
+.wp-associates-plugin .associates-modal-location {
     margin: 0;
     font-size: 14px;
     color: #666;
     font-weight: 500;
 }
 
-.associates-modal-description {
+.wp-associates-plugin .associates-modal-description {
     padding: 30px;
     font-size: 16px;
     line-height: 1.6;
     color: #555;
 }
 
-/* Carrossel de fotos de eventos */
-.associates-modal-event-photos {
+/* Carrossel de fotos */
+.wp-associates-plugin .associates-modal-photos {
     padding: 0 30px 30px 30px;
 }
 
-.associates-modal-event-photos h4 {
+.wp-associates-plugin .associates-modal-photos h4 {
     margin: 0 0 20px 0;
     font-size: 18px;
     color: #333;
     font-weight: 600;
 }
 
-.associates-carousel-container {
+.wp-associates-plugin .associates-carousel-container {
     position: relative;
     max-width: 100%;
 }
 
-.associates-carousel-wrapper {
+.wp-associates-plugin .associates-carousel-wrapper {
     position: relative;
     overflow: hidden;
     border-radius: 8px;
     background: #f8f8f8;
 }
 
-.associates-carousel-slides {
+.wp-associates-plugin .associates-carousel-slides {
     display: flex;
     transition: transform 0.3s ease;
 }
 
-.associates-carousel-slide {
+.wp-associates-plugin .associates-carousel-slide {
     min-width: 100%;
     display: none;
     text-align: center;
     padding: 20px;
 }
 
-.associates-carousel-slide.active {
+.wp-associates-plugin .associates-carousel-slide.active {
     display: block;
 }
 
-.associates-carousel-slide img {
+.wp-associates-plugin .associates-carousel-slide img {
     max-width: 100%;
     max-height: 300px;
     object-fit: contain;
@@ -328,12 +382,12 @@
     transition: transform 0.2s ease;
 }
 
-.associates-carousel-slide img:hover {
+.wp-associates-plugin .associates-carousel-slide img:hover {
     transform: scale(1.02);
 }
 
-.associates-carousel-prev,
-.associates-carousel-next {
+.wp-associates-plugin .associates-carousel-prev,
+.wp-associates-plugin .associates-carousel-next {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
@@ -352,27 +406,27 @@
     transition: background 0.2s ease;
 }
 
-.associates-carousel-prev:hover,
-.associates-carousel-next:hover {
+.wp-associates-plugin .associates-carousel-prev:hover,
+.wp-associates-plugin .associates-carousel-next:hover {
     background: rgba(0,0,0,0.9);
 }
 
-.associates-carousel-prev {
+.wp-associates-plugin .associates-carousel-prev {
     left: 10px;
 }
 
-.associates-carousel-next {
+.wp-associates-plugin .associates-carousel-next {
     right: 10px;
 }
 
-.associates-carousel-dots {
+.wp-associates-plugin .associates-carousel-dots {
     display: flex;
     justify-content: center;
     margin-top: 15px;
     gap: 8px;
 }
 
-.associates-carousel-dot {
+.wp-associates-plugin .associates-carousel-dot {
     width: 10px;
     height: 10px;
     border-radius: 50%;
@@ -381,165 +435,87 @@
     transition: background 0.2s ease;
 }
 
-.associates-carousel-dot.active {
+.wp-associates-plugin .associates-carousel-dot.active {
     background: #0073aa;
 }
 
-.associates-carousel-dot:hover {
+.wp-associates-plugin .associates-carousel-dot:hover {
     background: #999;
 }
 
-.associates-carousel-dot.active:hover {
+.wp-associates-plugin .associates-carousel-dot.active:hover {
     background: #005177;
 }
 
-
-/* Responsividade do modal */
-@media (max-width: 768px) {
-    .associates-modal {
-        padding: 15px;
-        align-items: flex-start;
-        padding-top: 50px;
-    }
-    
-    .associates-modal-content {
-        max-height: calc(100vh - 100px);
-        max-width: 100%;
-        width: 100%;
-        border-radius: 8px;
-    }
-    
-    .associates-modal-header {
-        padding: 20px;
-        flex-direction: column;
-        text-align: center;
-        gap: 15px;
-    }
-    
-    .associates-modal-info h3 {
-        font-size: 20px;
-    }
-    
-    .associates-modal-image {
-        width: 70px;
-        height: 70px;
-    }
-    
-    .associates-modal-description {
-        padding: 20px;
-        font-size: 15px;
-    }
-    
-    .associates-modal-event-photos {
-        padding: 0 20px 20px 20px;
-    }
-    
-    .associates-modal-event-photos h4 {
-        font-size: 16px;
-        margin-bottom: 15px;
-    }
-    
-    .associates-carousel-slide {
-        padding: 15px;
-    }
-    
-    .associates-carousel-slide img {
-        max-height: 250px;
-    }
-    
-    .associates-carousel-prev,
-    .associates-carousel-next {
-        width: 35px;
-        height: 35px;
-        font-size: 16px;
-    }
-    
-    .associates-carousel-prev {
-        left: 5px;
-    }
-    
-    .associates-carousel-next {
-        right: 5px;
-    }
-}
-
-@media (max-width: 480px) {
-    .associates-modal {
-        padding: 10px;
-        padding-top: 30px;
-    }
-    
-    .associates-modal-content {
-        max-height: calc(100vh - 60px);
-        border-radius: 6px;
-    }
-    
-    .associates-modal-header {
-        padding: 15px;
-        gap: 10px;
-    }
-    
-    .associates-modal-info h3 {
-        font-size: 18px;
-    }
-    
-    .associates-modal-image {
-        width: 60px;
-        height: 60px;
-    }
-    
-    .associates-modal-description {
-        padding: 15px;
-        font-size: 14px;
-        line-height: 1.5;
-    }
-    
-    .associates-modal-event-photos {
-        padding: 0 15px 15px 15px;
-    }
-    
-    .associates-modal-event-photos h4 {
-        font-size: 15px;
-        margin-bottom: 12px;
-    }
-    
-    .associates-carousel-slide {
-        padding: 10px;
-    }
-    
-    .associates-carousel-slide img {
-        max-height: 200px;
-    }
-    
-    .associates-carousel-prev,
-    .associates-carousel-next {
-        width: 30px;
-        height: 30px;
-        font-size: 14px;
-    }
-    
-    .associates-carousel-prev {
-        left: 3px;
-    }
-    
-    .associates-carousel-next {
-        right: 3px;
-    }
-    
-    .associates-modal-close {
-        top: 10px;
-        right: 15px;
-        font-size: 24px;
-    }
-}
-
-
-#map {
+/* Mapa com isolamento completo do Leaflet */
+.wp-associates-plugin #map {
     flex: 1;
     width: 100%;
     height: 350px;
     border-radius: 12px;
     min-height: 300px;
+    position: relative;
+    z-index: 1;
+    background: #f8f9fa;
+    isolation: isolate;
+}
+
+/* Isolamento completo do Leaflet */
+.wp-associates-plugin .leaflet-container {
+    background: #f8f9fa !important;
+    background-image: none !important;
+    background-color: #f8f9fa !important;
+    position: relative !important;
+    z-index: 1 !important;
+}
+
+.wp-associates-plugin .leaflet-tile-container {
+    background: transparent !important;
+    background-image: none !important;
+}
+
+.wp-associates-plugin .leaflet-tile {
+    background: transparent !important;
+    background-image: none !important;
+}
+
+.wp-associates-plugin .leaflet-pane {
+    background: transparent !important;
+    background-image: none !important;
+}
+
+.wp-associates-plugin .leaflet-map-pane {
+    background: transparent !important;
+    background-image: none !important;
+}
+
+.wp-associates-plugin .leaflet-control-container {
+    background: transparent !important;
+    background-image: none !important;
+}
+
+.wp-associates-plugin .leaflet-control-zoom {
+    background: transparent !important;
+    background-image: none !important;
+}
+
+.wp-associates-plugin .leaflet-control-attribution {
+    background: transparent !important;
+    background-image: none !important;
+}
+
+/* Garantir que o Leaflet não afete elementos externos */
+.wp-associates-plugin .leaflet-container * {
+    box-sizing: border-box !important;
+}
+
+/* Reset específico para pseudo-elementos do Leaflet */
+.wp-associates-plugin .leaflet-container::before,
+.wp-associates-plugin .leaflet-container::after {
+    display: none !important;
+    content: none !important;
+    background: none !important;
+    background-image: none !important;
 }
 
 /* ========================================
@@ -548,11 +524,11 @@
 
 /* Tablets e telas menores que 1024px */
 @media (max-width: 1024px) {
-    .associates-parent-div {
+    .wp-associates-plugin .associates-parent-div {
         flex-direction: column;
     }
     
-    .associates-list {
+    .wp-associates-plugin .associates-list {
         width: 100%;
         height: 500px;
     }
@@ -565,26 +541,26 @@
 
 /* Mobile - telas menores que 768px */
 @media (max-width: 768px) {
-    .associates-filters {
+    .wp-associates-plugin .associates-filters {
         gap: 8px;
     }
     
-    .associates-filters input[type="text"],
-    .associates-filters select {
+    .wp-associates-plugin .associates-filters input[type="text"],
+    .wp-associates-plugin .associates-filters select {
         min-width: 120px;
         flex: 1 1 calc(50% - 4px);
     }
     
-    .associates-filters button {
+    .wp-associates-plugin .associates-filters button {
         flex: 1 1 100%;
         width: 100%;
     }
     
-    .associates-parent-div {
+    .wp-associates-plugin .associates-parent-div {
         gap: 20px;
     }
     
-    .associates-list {
+    .wp-associates-plugin .associates-list {
         height: 400px;
     }
     
@@ -592,57 +568,57 @@
         height: 400px;
     }
     
-    .associate {
+    .wp-associates-plugin .associate {
         padding: 10px;
     }
     
-    .associate h3 {
+    .wp-associates-plugin .associate h3 {
         font-size: 15px;
     }
     
-    .associate .associates-description {
+    .wp-associates-plugin .associate .associates-description {
         font-size: 12px;
     }
     
-    .associate .associates-local {
+    .wp-associates-plugin .associate .associates-local {
         font-size: 11px;
     }
 }
 
 /* Mobile pequeno - telas menores que 480px */
 @media (max-width: 480px) {
-    .associates-filters {
+    .wp-associates-plugin .associates-filters {
         gap: 6px;
     }
     
-    .associates-filters input[type="text"],
-    .associates-filters select {
+    .wp-associates-plugin .associates-filters input[type="text"],
+    .wp-associates-plugin .associates-filters select {
         padding: 8px 10px;
         font-size: 12px;
         min-width: 100%;
         flex: 1 1 100%;
     }
     
-    .associates-filters select {
+    .wp-associates-plugin .associates-filters select {
         padding-right: 32px;
         background-size: 9px;
     }
     
-    .associates-filters button {
+    .wp-associates-plugin .associates-filters button {
         padding: 8px 12px;
         font-size: 12px;
         width: 100%;
     }
     
-    .associates-list {
+    .wp-associates-plugin .associates-list {
         height: 350px;
     }
     
-    .associates-list > .associate {
+    .wp-associates-plugin .associates-list > .associate {
         margin-bottom: 12px;
     }
     
-    .associate-thumb {
+    .wp-associates-plugin .associate-thumb {
         width: 70px;
         height: 70px;
     }
@@ -652,25 +628,25 @@
         border-radius: 8px;
     }
     
-    .associates-popup {
+    .wp-associates-plugin .associates-popup {
         width: 180px;
     }
     
-    .associates-popup img {
+    .wp-associates-plugin .associates-popup img {
         width: 60px;
         height: 60px;
     }
 }
 
 /* ========================================
-   ESTILOS PARA FOTOS DE EVENTOS (ADMIN)
+   ESTILOS PARA FOTOS (ADMIN)
    ======================================== */
 
-#associates-event-photos-container {
+#associates-photos-container {
     padding: 10px 0;
 }
 
-#associates-add-event-photos {
+#associates-add-photos {
     background: #0073aa;
     color: white;
     text-decoration: none;
@@ -684,20 +660,20 @@
     line-height: 1.4;
 }
 
-#associates-add-event-photos:hover {
+#associates-add-photos:hover {
     background: #005177;
     color: white;
     text-decoration: none;
 }
 
-#associates-event-photos-preview {
+#associates-photos-preview {
     display: flex;
     flex-wrap: wrap;
     gap: 5px;
     margin-top: 10px;
 }
 
-.associates-event-photo-item {
+.associates-photo-item {
     position: relative;
     display: inline-block;
     margin: 2px;
@@ -707,11 +683,11 @@
     transition: border-color 0.2s ease;
 }
 
-.associates-event-photo-item:hover {
+.associates-photo-item:hover {
     border-color: #0073aa;
 }
 
-.associates-event-photo-item img {
+.associates-photo-item img {
     width: 60px;
     height: 60px;
     object-fit: cover;
@@ -719,7 +695,7 @@
     border-radius: 4px;
 }
 
-.associates-remove-event-photo {
+.associates-remove-photo {
     position: absolute;
     top: -5px;
     right: -5px;
@@ -738,18 +714,18 @@
     transition: background-color 0.2s ease;
 }
 
-.associates-remove-event-photo:hover {
+.associates-remove-photo:hover {
     background: #a00;
 }
 
-.associates-remove-event-photo:focus {
+.associates-remove-photo:focus {
     outline: none;
     box-shadow: 0 0 0 2px #fff, 0 0 0 4px #dc3232;
 }
 
 /* Estilo para quando não há fotos */
-#associates-event-photos-preview:empty::after {
-    content: "Nenhuma foto de evento adicionada";
+#associates-photos-preview:empty::after {
+    content: "Nenhuma foto adicionada";
     color: #666;
     font-style: italic;
     font-size: 13px;
@@ -759,12 +735,12 @@
 
 /* Responsividade para o metabox de fotos */
 @media (max-width: 782px) {
-    .associates-event-photo-item img {
+    .associates-photo-item img {
         width: 50px;
         height: 50px;
     }
     
-    .associates-remove-event-photo {
+    .associates-remove-photo {
         width: 18px;
         height: 18px;
         font-size: 11px;

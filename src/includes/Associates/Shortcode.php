@@ -116,7 +116,7 @@ class Shortcode {
     private function render_filters($terms) {
         $municipalities = Municipalities::get_instance()->get_municipalities();
         ?>
-        <div class="associates-wrapper">
+        <div class="wp-associates-plugin">
             <div class="associates-filters">
                 <input type="text" id="associates-search-associate" placeholder="<?php _e('Buscar por nome ou descrição', 'wp-associates'); ?>">
 
@@ -213,9 +213,11 @@ class Shortcode {
             <div class="associate-thumb">
                 <?php
                 if ($image) {
-                    echo $image;
+                    // Adicionar classe específica à imagem
+                    $image_with_class = str_replace('<img ', '<img class="associate-thumb-image" ', $image);
+                    echo $image_with_class;
                 } else {
-                    echo '<img src="' . esc_url($avatar_url) . '" alt="' . __('sem imagem', 'wp-associates') . '" />';
+                    echo '<img class="associate-thumb-image" src="' . esc_url($avatar_url) . '" alt="' . __('sem imagem', 'wp-associates') . '" />';
                 }
                 ?>
             </div>
@@ -247,6 +249,7 @@ class Shortcode {
     private function render_map() {
         ?>
             <div id="map"></div>
+        </div>
         </div>
         <?php
     }
@@ -391,11 +394,53 @@ class Shortcode {
 
         (function(){
             document.addEventListener('DOMContentLoaded', function(){
-                // Inicializar mapa
-                var map = L.map('map').setView([-12.5797, -41.7007], 6);
+                // Inicializar mapa com configurações isoladas
+                var map = L.map('map', {
+                    zoomControl: true,
+                    attributionControl: true,
+                    preferCanvas: true,
+                    zoomSnap: 0.5,
+                    zoomDelta: 0.5
+                }).setView([-12.5797, -41.7007], 6);
+                
+                // Configurar tile layer com opções específicas
                 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                    attribution: 'Map data © <a href="https://openstreetmap.org">OpenStreetMap</a>'
+                    attribution: 'Map data © <a href="https://openstreetmap.org">OpenStreetMap</a>',
+                    maxZoom: 18,
+                    minZoom: 3,
+                    subdomains: ['a', 'b', 'c']
                 }).addTo(map);
+                
+                // Garantir que o mapa não cause problemas de background
+                var mapContainer = document.getElementById('map');
+                if (mapContainer) {
+                    mapContainer.style.background = '#f8f9fa';
+                    mapContainer.style.backgroundImage = 'none';
+                    mapContainer.style.isolation = 'isolate';
+                    mapContainer.style.position = 'relative';
+                    mapContainer.style.zIndex = '1';
+                }
+                
+                // Garantir que o wrapper do plugin está visível
+                var pluginWrapper = document.querySelector('.wp-associates-plugin');
+                if (pluginWrapper) {
+                    pluginWrapper.style.display = 'block';
+                    pluginWrapper.style.visibility = 'visible';
+                    pluginWrapper.style.opacity = '1';
+                }
+                
+                // Isolar completamente o Leaflet após inicialização
+                setTimeout(function() {
+                    var leafletContainer = document.querySelector('.wp-associates-plugin .leaflet-container');
+                    if (leafletContainer) {
+                        leafletContainer.style.background = '#f8f9fa';
+                        leafletContainer.style.backgroundImage = 'none';
+                        leafletContainer.style.isolation = 'isolate';
+                        leafletContainer.style.position = 'relative';
+                        leafletContainer.style.zIndex = '1';
+                    }
+                }, 100);
+                
 
                 var markers = [];
                 var markerGroup = L.layerGroup().addTo(map);
