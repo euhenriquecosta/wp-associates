@@ -83,13 +83,6 @@ class PostType {
             'show_in_rest' => true,
             'rewrite' => false,
             'publicly_queryable' => false,
-            'capability_type' => 'post',
-            'hierarchical' => false,
-            'show_in_menu' => true,
-            'show_in_admin_bar' => true,
-            'can_export' => true,
-            'exclude_from_search' => false,
-            'show_in_nav_menus' => false,
         );
         
         register_post_type($this->post_type_slug, $args);

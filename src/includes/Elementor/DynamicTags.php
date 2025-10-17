@@ -5,6 +5,9 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
+use Associates\Elementor\ElementorIntegration;
+use Associates\Elementor\ElementorSupport;
+
 /**
  * Classe para registrar Dynamic Tags customizadas do Elementor
  */
@@ -30,6 +33,10 @@ class DynamicTags {
      */
     private function __construct() {
         add_action('elementor/dynamic_tags/register', array($this, 'register_tags'));
+        
+        // Inicializar integração com Elementor
+        ElementorIntegration::get_instance();
+        ElementorSupport::get_instance();
     }
     
     /**
