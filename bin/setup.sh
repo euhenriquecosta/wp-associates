@@ -83,6 +83,103 @@ docker exec wordpress wp plugin install query-monitor user-switching --activate 
 echo "> Ativando plugin WP Associates..."
 docker exec wordpress wp plugin activate wp-associates --allow-root 2>/dev/null
 
+echo "> Ativando upload de templates no Elementor..."
+docker exec wordpress wp option update elementor_allow_svg 1 --allow-root 2>/dev/null
+docker exec wordpress wp option update elementor_unfiltered_files_upload 1 --allow-root 2>/dev/null
+docker exec wordpress wp option update elementor_upload_file_types '["json","xml","zip"]' --format=json --allow-root 2>/dev/null
+docker exec wordpress wp option update elementor_editor_upgrade_notice 0 --allow-root 2>/dev/null
+docker exec wordpress wp option update elementor_editor_break_lines 1 --allow-root 2>/dev/null
+docker exec wordpress wp option update elementor_disable_color_schemes 1 --allow-root 2>/dev/null
+docker exec wordpress wp option update elementor_disable_typography_schemes 1 --allow-root 2>/dev/null
+
+echo "> Desabilitando avisos de segurança do Elementor..."
+docker exec wordpress wp option update elementor_disable_json_upload_warning 1 --allow-root 2>/dev/null
+docker exec wordpress wp option update elementor_disable_json_upload_restriction 1 --allow-root 2>/dev/null
+docker exec wordpress wp option update elementor_json_upload_warning_dismissed 1 --allow-root 2>/dev/null
+docker exec wordpress wp option update elementor_safe_mode 0 --allow-root 2>/dev/null
+
+echo "> Criando associados de teste..."
+# Criar associado 1
+ASSOCIATE1_ID=$(docker exec wordpress wp post create --post_type=associate --post_title="João Silva" --post_status=publish --allow-root --porcelain 2>/dev/null)
+if [ ! -z "$ASSOCIATE1_ID" ]; then
+    echo "> Associado 1 criado com ID: $ASSOCIATE1_ID"
+    docker exec wordpress wp post meta set $ASSOCIATE1_ID _wpa_description "Produtor de queijo artesanal com mais de 20 anos de experiência na região de Acajutiba." --allow-root 2>/dev/null
+    docker exec wordpress wp post meta set $ASSOCIATE1_ID _wpa_municipality "Acajutiba" --allow-root 2>/dev/null
+    docker exec wordpress wp post meta set $ASSOCIATE1_ID _wpa_latitude "-11.6575" --allow-root 2>/dev/null
+    docker exec wordpress wp post meta set $ASSOCIATE1_ID _wpa_longitude "-38.0078" --allow-root 2>/dev/null
+fi
+
+# Criar associado 2
+ASSOCIATE2_ID=$(docker exec wordpress wp post create --post_type=associate --post_title="Maria Santos" --post_status=publish --allow-root --porcelain 2>/dev/null)
+if [ ! -z "$ASSOCIATE2_ID" ]; then
+    echo "> Associado 2 criado com ID: $ASSOCIATE2_ID"
+    docker exec wordpress wp post meta set $ASSOCIATE2_ID _wpa_description "Especialista em queijo coalho e derivados lácteos tradicionais da Bahia." --allow-root 2>/dev/null
+    docker exec wordpress wp post meta set $ASSOCIATE2_ID _wpa_municipality "Inhambupe" --allow-root 2>/dev/null
+    docker exec wordpress wp post meta set $ASSOCIATE2_ID _wpa_latitude "-11.7844" --allow-root 2>/dev/null
+    docker exec wordpress wp post meta set $ASSOCIATE2_ID _wpa_longitude "-37.1867" --allow-root 2>/dev/null
+fi
+
+# Criar associado 3
+ASSOCIATE3_ID=$(docker exec wordpress wp post create --post_type=associate --post_title="Pedro Oliveira" --post_status=publish --allow-root --porcelain 2>/dev/null)
+if [ ! -z "$ASSOCIATE3_ID" ]; then
+    echo "> Associado 3 criado com ID: $ASSOCIATE3_ID"
+    docker exec wordpress wp post meta set $ASSOCIATE3_ID _wpa_description "Produtor familiar de queijo de coalho e manteiga artesanal." --allow-root 2>/dev/null
+    docker exec wordpress wp post meta set $ASSOCIATE3_ID _wpa_municipality "Esplanada" --allow-root 2>/dev/null
+    docker exec wordpress wp post meta set $ASSOCIATE3_ID _wpa_latitude "-11.7961" --allow-root 2>/dev/null
+    docker exec wordpress wp post meta set $ASSOCIATE3_ID _wpa_longitude "-37.9450" --allow-root 2>/dev/null
+fi
+
+# Criar associado 4
+ASSOCIATE4_ID=$(docker exec wordpress wp post create --post_type=associate --post_title="Ana Costa" --post_status=publish --allow-root --porcelain 2>/dev/null)
+if [ ! -z "$ASSOCIATE4_ID" ]; then
+    echo "> Associado 4 criado com ID: $ASSOCIATE4_ID"
+    docker exec wordpress wp post meta set $ASSOCIATE4_ID _wpa_description "Cooperativa de produtores de queijo artesanal da região de Entre Rios." --allow-root 2>/dev/null
+    docker exec wordpress wp post meta set $ASSOCIATE4_ID _wpa_municipality "Entre Rios" --allow-root 2>/dev/null
+    docker exec wordpress wp post meta set $ASSOCIATE4_ID _wpa_latitude "-11.9419" --allow-root 2>/dev/null
+    docker exec wordpress wp post meta set $ASSOCIATE4_ID _wpa_longitude "-38.0819" --allow-root 2>/dev/null
+fi
+
+# Criar associado 5
+ASSOCIATE5_ID=$(docker exec wordpress wp post create --post_type=associate --post_title="Carlos Mendes" --post_status=publish --allow-root --porcelain 2>/dev/null)
+if [ ! -z "$ASSOCIATE5_ID" ]; then
+    echo "> Associado 5 criado com ID: $ASSOCIATE5_ID"
+    docker exec wordpress wp post meta set $ASSOCIATE5_ID _wpa_description "Produtor de queijo de coalho com certificação de qualidade e tradição familiar." --allow-root 2>/dev/null
+    docker exec wordpress wp post meta set $ASSOCIATE5_ID _wpa_municipality "Aporá" --allow-root 2>/dev/null
+    docker exec wordpress wp post meta set $ASSOCIATE5_ID _wpa_latitude "-11.6575" --allow-root 2>/dev/null
+    docker exec wordpress wp post meta set $ASSOCIATE5_ID _wpa_longitude "-38.0078" --allow-root 2>/dev/null
+fi
+
+echo "> Criando categorias de associados..."
+# Criar categorias
+CATEGORIA1_ID=$(docker exec wordpress wp term create associate_category "Produtores Artesanais" --description="Produtores de queijo artesanal tradicional" --allow-root --porcelain 2>/dev/null)
+CATEGORIA2_ID=$(docker exec wordpress wp term create associate_category "Cooperativas" --description="Cooperativas de produtores" --allow-root --porcelain 2>/dev/null)
+CATEGORIA3_ID=$(docker exec wordpress wp term create associate_category "Família" --description="Produtores familiares" --allow-root --porcelain 2>/dev/null)
+
+# Associar categorias aos associados
+if [ ! -z "$ASSOCIATE1_ID" ] && [ ! -z "$CATEGORIA1_ID" ]; then
+    docker exec wordpress wp post term set $ASSOCIATE1_ID associate_category $CATEGORIA1_ID --allow-root 2>/dev/null
+fi
+if [ ! -z "$ASSOCIATE2_ID" ] && [ ! -z "$CATEGORIA1_ID" ]; then
+    docker exec wordpress wp post term set $ASSOCIATE2_ID associate_category $CATEGORIA1_ID --allow-root 2>/dev/null
+fi
+if [ ! -z "$ASSOCIATE3_ID" ] && [ ! -z "$CATEGORIA3_ID" ]; then
+    docker exec wordpress wp post term set $ASSOCIATE3_ID associate_category $CATEGORIA3_ID --allow-root 2>/dev/null
+fi
+if [ ! -z "$ASSOCIATE4_ID" ] && [ ! -z "$CATEGORIA2_ID" ]; then
+    docker exec wordpress wp post term set $ASSOCIATE4_ID associate_category $CATEGORIA2_ID --allow-root 2>/dev/null
+fi
+if [ ! -z "$ASSOCIATE5_ID" ] && [ ! -z "$CATEGORIA1_ID" ]; then
+    docker exec wordpress wp post term set $ASSOCIATE5_ID associate_category $CATEGORIA1_ID --allow-root 2>/dev/null
+fi
+
+echo "> Criando página de teste com shortcode..."
+# Criar página de teste
+TEST_PAGE_ID=$(docker exec wordpress wp post create --post_type=page --post_title="Associados - Teste" --post_name="associados-teste" --post_status=publish --post_content="[wp-associates]" --allow-root --porcelain 2>/dev/null)
+if [ ! -z "$TEST_PAGE_ID" ]; then
+    echo "> Página de teste criada com ID: $TEST_PAGE_ID"
+    echo "> URL da página: http://localhost:8080/associados-teste"
+fi
+
 echo "> Ativando Advanced Custom Fields..."
 docker exec wordpress wp plugin activate advanced-custom-fields --allow-root 2>/dev/null
 
@@ -107,15 +204,46 @@ if [ ! -z "$PAGE_ID" ]; then
     docker exec wordpress wp post meta set $PAGE_ID _elementor_template_type page --allow-root 2>/dev/null
     
     echo "> Importando template da Landing Page..."
-    # Importar template
-    docker exec wordpress wp elementor import /var/www/html/wp-content/plugins/wp-associates/templates/lp.json --allow-root 2>/dev/null || echo "Template não importado automaticamente - será necessário importar manualmente"
+    # Verificar se o arquivo de template existe
+    if docker exec wordpress test -f /var/www/html/wp-content/plugins/wp-associates/templates/lp.json; then
+        echo "   ✅ Arquivo lp.json encontrado"
+        # Tentar importar template via CLI
+        docker exec wordpress wp elementor import /var/www/html/wp-content/plugins/wp-associates/templates/lp.json --allow-root 2>/dev/null
+        if [ $? -eq 0 ]; then
+            echo "   ✅ Template importado com sucesso"
+            
+            # Aguardar um pouco para o template ser processado
+            sleep 3
+            
+            # Tentar aplicar o template automaticamente
+            echo "> Aplicando template à página automaticamente..."
+            # Buscar o ID do template importado
+            TEMPLATE_ID=$(docker exec wordpress wp post list --post_type=elementor_library --meta_key=_elementor_template_type --meta_value=page --format=ids --orderby=date --order=DESC --posts_per_page=1 --allow-root 2>/dev/null | head -1)
+            
+            if [ ! -z "$TEMPLATE_ID" ]; then
+                echo "   ✅ Template encontrado com ID: $TEMPLATE_ID"
+                # Aplicar template à página
+                docker exec wordpress wp post meta set $PAGE_ID _elementor_template_id $TEMPLATE_ID --allow-root 2>/dev/null
+                docker exec wordpress wp post meta set $PAGE_ID _elementor_edit_mode builder --allow-root 2>/dev/null
+                docker exec wordpress wp post meta set $PAGE_ID _elementor_template_type page --allow-root 2>/dev/null
+                docker exec wordpress wp post meta set $PAGE_ID _elementor_data '[]' --format=json --allow-root 2>/dev/null
+                echo "   ✅ Template aplicado à página automaticamente"
+                echo "   🌐 Página pronta: http://localhost:8080/associacao-queijo-baiano"
+            else
+                echo "   ⚠️  Template não encontrado - será necessário aplicar manualmente"
+            fi
+        else
+            echo "   ⚠️  Importação automática falhou - será necessário importar manualmente"
+        fi
+    else
+        echo "   ⚠️  Arquivo lp.json não encontrado"
+    fi
     
-    echo "> Aplicando template à página..."
-    # Aplicar template à página (isso pode precisar ser feito manualmente no Elementor)
-    echo "   Para aplicar o template:"
+    echo "> Instruções para aplicação manual (se necessário):"
     echo "   1. Acesse: http://localhost:8080/wp-admin/post.php?post=$PAGE_ID&action=elementor"
     echo "   2. Clique em 'Import Template'"
     echo "   3. Selecione o arquivo lp.json"
+    echo "   4. Clique em 'Insert' para aplicar"
 else
     echo "❌ Erro ao criar a página"
 fi
@@ -174,10 +302,34 @@ docker exec wordpress wp user get 1 --field=roles 2>/dev/null
 docker exec wordpress wp user list-caps 1 2>/dev/null | grep -E "(upload_files|edit_posts|manage_options)" || echo "Capacidades não encontradas"
 
 echo ""
+echo "🔍 Verificando configuração final..."
+
+# Verificar plugin
+PLUGIN_STATUS=$(docker exec wordpress wp plugin list --allow-root 2>/dev/null | grep wp-associates)
+if echo "$PLUGIN_STATUS" | grep -q "active"; then
+    echo "✅ Plugin WP Associates ativo"
+else
+    echo "❌ Plugin não está ativo"
+fi
+
+# Verificar associados
+ASSOCIATES_COUNT=$(docker exec wordpress wp post list --post_type=associate --format=count --allow-root 2>/dev/null)
+echo "✅ $ASSOCIATES_COUNT associados criados"
+
+# Verificar página de teste
+TEST_PAGE=$(docker exec wordpress wp post list --post_type=page --name=associados-teste --format=count --allow-root 2>/dev/null)
+if [ "$TEST_PAGE" -gt 0 ]; then
+    echo "✅ Página de teste criada"
+else
+    echo "⚠️  Página de teste não encontrada"
+fi
+
+echo ""
 echo "🚀 Configuração DEV concluída!"
 echo "URL:     http://localhost:8080"
 echo "Admin:   http://localhost:8080/wp-admin"
+echo "Teste:   http://localhost:8080/associados-teste"
 echo ""
-echo "Usuário: admin"
-echo "Senha:   admin"
+echo "👤 Usuário: admin"
+echo "🔑 Senha:   admin"
 echo ""

@@ -106,7 +106,7 @@ class Shortcode {
             'wp-associates-css',
             WPA_PLUGIN_URL . '/styles.css',
             array(),
-            '2.7'
+            '2.7.1'
         );
     }
     
@@ -116,7 +116,7 @@ class Shortcode {
     private function render_filters($terms) {
         $municipalities = Municipalities::get_instance()->get_municipalities();
         ?>
-        <div class="associates-wrapper">
+        <div class="wp-associates-plugin">
             <div class="associates-filters">
                 <input type="text" id="associates-search-associate" placeholder="<?php _e('Buscar por nome ou descrição', 'wp-associates'); ?>">
 
@@ -171,6 +171,7 @@ class Shortcode {
         $lng = get_post_meta($post_id, '_wpa_longitude', true);
         $description = get_post_meta($post_id, '_wpa_description', true);
         $image = get_the_post_thumbnail($post_id, 'medium');
+        $has_image = !empty($image);
         
         // Buscar categorias
         $taxonomy = Taxonomy::get_instance();
@@ -180,24 +181,6 @@ class Shortcode {
             $terms_assoc_json = esc_attr(json_encode($terms_assoc));
         }
         
-        // Buscar fotos
-        $photos = get_post_meta($post_id, '_wpa_photos', true);
-        $photos_json = '';
-        if (is_array($photos) && !empty($photos)) {
-            $photos_data = array();
-            foreach ($photos as $photo_id) {
-                $photo_url = wp_get_attachment_image_url($photo_id, 'large');
-                $photo_thumb = wp_get_attachment_image_url($photo_id, 'thumbnail');
-                if ($photo_url && $photo_thumb) {
-                    $photos_data[] = array(
-                        'id' => $photo_id,
-                        'url' => $photo_url,
-                        'thumb' => $photo_thumb
-                    );
-                }
-            }
-            $photos_json = esc_attr(json_encode($photos_data));
-        }
         
         $avatar_url = $this->plugin->get_plugin_url() . 'assets/avatar.png';
         ?>
@@ -208,14 +191,16 @@ class Shortcode {
              data-description="<?php echo esc_attr($description); ?>"
              data-municipality="<?php echo esc_attr($municipality); ?>" 
              data-cats='<?php echo $terms_assoc_json; ?>'
-             data-photos='<?php echo $photos_json; ?>'>
+>
             
             <div class="associate-thumb">
                 <?php
-                if ($image) {
-                    echo $image;
+                if ($has_image) {
+                    // Adicionar classe específica à imagem
+                    $image_with_class = str_replace('<img ', '<img class="associate-thumb-image" ', $image);
+                    echo $image_with_class;
                 } else {
-                    echo '<img src="' . esc_url($avatar_url) . '" alt="' . __('sem imagem', 'wp-associates') . '" />';
+                    echo '<img class="associate-thumb-image" src="' . esc_url($avatar_url) . '" alt="' . __('Avatar', 'wp-associates') . '" />';
                 }
                 ?>
             </div>
@@ -247,6 +232,7 @@ class Shortcode {
     private function render_map() {
         ?>
             <div id="map"></div>
+        </div>
         </div>
         <?php
     }
@@ -292,38 +278,9 @@ class Shortcode {
         }
 
         // Função para mostrar modal do associado
-        function showAssociateModal(name, description, municipality, imgOuter, photos) {
+        function showAssociateModal(name, description, municipality, imgOuter) {
             var modal = document.getElementById('associates-modal');
             var modalBody = document.getElementById('associates-modal-body');
-            
-            var photosHtml = '';
-            if (photos && photos.length > 0) {
-                photosHtml = '<div class="associates-modal-photos">' +
-                    '<h4><?php _e('Fotos', 'wp-associates'); ?></h4>' +
-                    '<div class="associates-carousel-container">' +
-                        '<div class="associates-carousel-wrapper">' +
-                            '<button class="associates-carousel-prev" onclick="changeCarouselSlide(-1)">‹</button>' +
-                            '<div class="associates-carousel-slides">';
-                
-                photos.forEach(function(photo, index) {
-                    photosHtml += '<div class="associates-carousel-slide' + (index === 0 ? ' active' : '') + '">' +
-                        '<img src="' + photo.url + '" alt="<?php _e('Foto', 'wp-associates'); ?>">' +
-                        '</div>';
-                });
-                
-                photosHtml += '</div>' +
-                            '<button class="associates-carousel-next" onclick="changeCarouselSlide(1)">›</button>' +
-                        '</div>' +
-                        '<div class="associates-carousel-dots">';
-                
-                photos.forEach(function(photo, index) {
-                    photosHtml += '<span class="associates-carousel-dot' + (index === 0 ? ' active' : '') + '" onclick="goToSlide(' + index + ')"></span>';
-                });
-                
-                photosHtml += '</div>' +
-                    '</div>' +
-                '</div>';
-            }
             
             var modalContent = '<div class="associates-modal-header">' +
                 '<div class="associates-modal-image">' + imgOuter + '</div>' +
@@ -332,8 +289,7 @@ class Shortcode {
                     '<p class="associates-modal-location">' + municipality + ' - BA</p>' +
                 '</div>' +
             '</div>' +
-            '<div class="associates-modal-description">' + description + '</div>' +
-            photosHtml;
+            '<div class="associates-modal-description">' + description + '</div>';
             
             modalBody.innerHTML = modalContent;
             modal.classList.add('show');
@@ -345,57 +301,56 @@ class Shortcode {
             modal.classList.remove('show');
         }
 
-        // Variáveis globais para o carrossel
-        var currentSlide = 0;
-        var totalSlides = 0;
-
-        // Função para mudar slide do carrossel
-        function changeCarouselSlide(direction) {
-            var slides = document.querySelectorAll('.associates-carousel-slide');
-            var dots = document.querySelectorAll('.associates-carousel-dot');
-            
-            if (slides.length === 0) return;
-            
-            totalSlides = slides.length;
-            currentSlide += direction;
-            
-            if (currentSlide >= totalSlides) {
-                currentSlide = 0;
-            } else if (currentSlide < 0) {
-                currentSlide = totalSlides - 1;
-            }
-            
-            slides.forEach(function(slide, index) {
-                slide.classList.toggle('active', index === currentSlide);
-            });
-            
-            dots.forEach(function(dot, index) {
-                dot.classList.toggle('active', index === currentSlide);
-            });
-        }
-
-        // Função para ir para um slide específico
-        function goToSlide(slideIndex) {
-            currentSlide = slideIndex;
-            var slides = document.querySelectorAll('.associates-carousel-slide');
-            var dots = document.querySelectorAll('.associates-carousel-dot');
-            
-            slides.forEach(function(slide, index) {
-                slide.classList.toggle('active', index === slideIndex);
-            });
-            
-            dots.forEach(function(dot, index) {
-                dot.classList.toggle('active', index === slideIndex);
-            });
-        }
 
         (function(){
             document.addEventListener('DOMContentLoaded', function(){
-                // Inicializar mapa
-                var map = L.map('map').setView([-12.5797, -41.7007], 6);
+                // Inicializar mapa com configurações isoladas
+                var map = L.map('map', {
+                    zoomControl: true,
+                    attributionControl: true,
+                    preferCanvas: true,
+                    zoomSnap: 0.5,
+                    zoomDelta: 0.5
+                }).setView([-12.5797, -41.7007], 6);
+                
+                // Configurar tile layer com opções específicas
                 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                    attribution: 'Map data © <a href="https://openstreetmap.org">OpenStreetMap</a>'
+                    attribution: 'Map data © <a href="https://openstreetmap.org">OpenStreetMap</a>',
+                    maxZoom: 18,
+                    minZoom: 3,
+                    subdomains: ['a', 'b', 'c']
                 }).addTo(map);
+                
+                // Garantir que o mapa não cause problemas de background
+                var mapContainer = document.getElementById('map');
+                if (mapContainer) {
+                    mapContainer.style.background = '#f8f9fa';
+                    mapContainer.style.backgroundImage = 'none';
+                    mapContainer.style.isolation = 'isolate';
+                    mapContainer.style.position = 'relative';
+                    mapContainer.style.zIndex = '1';
+                }
+                
+                // Garantir que o wrapper do plugin está visível
+                var pluginWrapper = document.querySelector('.wp-associates-plugin');
+                if (pluginWrapper) {
+                    pluginWrapper.style.display = 'block';
+                    pluginWrapper.style.visibility = 'visible';
+                    pluginWrapper.style.opacity = '1';
+                }
+                
+                // Isolar completamente o Leaflet após inicialização
+                setTimeout(function() {
+                    var leafletContainer = document.querySelector('.wp-associates-plugin .leaflet-container');
+                    if (leafletContainer) {
+                        leafletContainer.style.background = '#f8f9fa';
+                        leafletContainer.style.backgroundImage = 'none';
+                        leafletContainer.style.isolation = 'isolate';
+                        leafletContainer.style.position = 'relative';
+                        leafletContainer.style.zIndex = '1';
+                    }
+                }, 100);
+                
 
                 var markers = [];
                 var markerGroup = L.layerGroup().addTo(map);
@@ -418,25 +373,23 @@ class Shortcode {
                     var description = el.dataset.description || '';
                     var municipality = el.dataset.municipality || '';
                     var cats = [];
-                    var photos = [];
                     try { cats = JSON.parse(el.dataset.cats); } catch(e){ cats = []; }
-                    try { photos = JSON.parse(el.dataset.photos); } catch(e){ photos = []; }
 
                     var img = el.querySelector('img');
-                    var imgOuter = img ? img.outerHTML : '<img src="<?php echo esc_url($avatar_url); ?>" alt="<?php _e('sem imagem', 'wp-associates'); ?>" />';
+                    var imgOuter = img ? img.outerHTML : '<img class="associate-thumb-image" src="<?php echo esc_url($avatar_url); ?>" alt="<?php _e('Avatar', 'wp-associates'); ?>" />';
 
                     if (!isNaN(lat) && !isNaN(lng)) {
                         var icon = createDivIconFromImage(imgOuter);
                         var marker = L.marker([lat,lng], {icon: icon});
                         
                         marker.on('click', function() {
-                            showAssociateModal(name, description, municipality, imgOuter, photos);
+                            showAssociateModal(name, description, municipality, imgOuter);
                         });
                         
                         marker.addTo(markerGroup);
-                        markers.push({el: el, marker: marker, lat: lat, lng: lng, cats: cats, municipality: municipality, name: name, description: description, photos: photos});
+                        markers.push({el: el, marker: marker, lat: lat, lng: lng, cats: cats, municipality: municipality, name: name, description: description});
                     } else {
-                        markers.push({el: el, marker: null, lat: null, lng: null, cats: cats, municipality: municipality, name: name, description: description, photos: photos});
+                        markers.push({el: el, marker: null, lat: null, lng: null, cats: cats, municipality: municipality, name: name, description: description});
                     }
                 });
 
@@ -512,15 +465,13 @@ class Shortcode {
                         var name = card.dataset.name;
                         var description = card.dataset.description;
                         var municipality = card.dataset.municipality;
-                        var photos = [];
-                        try { photos = JSON.parse(card.dataset.photos); } catch(e){ photos = []; }
                         var img = card.querySelector('img');
-                        var imgOuter = img ? img.outerHTML : '<img src="<?php echo esc_url($avatar_url); ?>" alt="<?php _e('sem imagem', 'wp-associates'); ?>" />';
+                        var imgOuter = img ? img.outerHTML : '<img class="associate-thumb-image" src="<?php echo esc_url($avatar_url); ?>" alt="<?php _e('Avatar', 'wp-associates'); ?>" />';
                         
                         var found = markers.find(function(m){ return m.name === name && m.marker; });
                         if (found && found.marker) {
                             map.setView(found.marker.getLatLng(), 12);
-                            showAssociateModal(name, description, municipality, imgOuter, photos);
+                            showAssociateModal(name, description, municipality, imgOuter);
                         }
                     });
                 });
