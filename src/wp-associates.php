@@ -22,8 +22,16 @@ define('WPA_PLUGIN_PATH', untrailingslashit(plugin_dir_path(WPA_PLUGIN_FILE)));
 define('WPA_PLUGIN_URL', untrailingslashit(plugins_url('/', WPA_PLUGIN_FILE)));
 
 // Carregar autoloader do Composer
-if (file_exists(WPA_PLUGIN_PATH . '/vendor/autoload.php')) {
-    require_once WPA_PLUGIN_PATH . '/vendor/autoload.php';
+$autoload_paths = array(
+    WPA_PLUGIN_PATH . '/vendor/autoload.php',  // Para distribuição
+    dirname(WPA_PLUGIN_PATH) . '/vendor/autoload.php'  // Para desenvolvimento
+);
+
+foreach ($autoload_paths as $path) {
+    if (file_exists($path)) {
+        require_once $path;
+        break;
+    }
 }
 
 // Incluir o arquivo principal do plugin

@@ -7,21 +7,11 @@
       "Associates\\": "includes/"
     }
   },
-  "repositories": [
-    {
-      "type": "composer",
-      "url": "https://wpackagist.org"
-    }
-  ],
   "require": {
-    "php": ">=8.1",
-    "wpackagist-plugin/advanced-custom-fields": "*"
+    "php": ">=7.4"
   },
-  "config": {
-    "process-timeout": 0,
-    "allow-plugins": {
-      "composer/installers": true
-    }
+  "require-dev": {
+    "php-stubs/wordpress-stubs": "^6.0"
   },
   "scripts": {
     "build": "bin/build.sh",
@@ -32,10 +22,5 @@
     "clean": "docker compose down -v",
     "restart": "docker compose restart",
     "logs": "docker compose logs -f wordpress"
-  },
-  "require-dev": {
-    "php-stubs/wordpress-stubs": "^6.0",
-    "szepeviktor/phpstan-wordpress": "^2.0",
-    "php-stubs/acf-pro-stubs": "^6.5"
   }
 }
