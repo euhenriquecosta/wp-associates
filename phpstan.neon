@@ -5,8 +5,9 @@ parameters:
     level: 3
     paths:
         - src
+    excludePaths:
+        - src/includes/Elementor/
     ignoreErrors:
-        - '#Function wp_get_post_terms\(\) has no return type specified#'
+        - '#Call to static method get_instance\(\) on an unknown class Associates\\Elementor\\DynamicTags#'
     bootstrapFiles:
         - vendor/php-stubs/wordpress-stubs/wordpress-stubs.php
-        - vendor/php-stubs/acf-pro-stubs/acf-pro-stubs.php
