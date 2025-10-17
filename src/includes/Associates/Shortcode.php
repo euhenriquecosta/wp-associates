@@ -106,7 +106,7 @@ class Shortcode {
             'wp-associates-css',
             WPA_PLUGIN_URL . '/styles.css',
             array(),
-            '2.7'
+            '2.7.1'
         );
     }
     
