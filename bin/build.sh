@@ -1,42 +1,33 @@
 #!/bin/bash
 
-# Script para criar ZIP do plugin WordPress
-# Ignora arquivos de desenvolvimento
+# Script para preparar o plugin para distribuição
 
-# Obter o diretório do script
-SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
+echo "🚀 Preparando plugin para distribuição..."
 
-PLUGIN_NAME="wp-associates"
-BUILD_DIR="${PROJECT_DIR}/.build"
-OUTPUT_FILE="${PROJECT_DIR}/${PLUGIN_NAME}.zip"
+# Criar pasta dist
+echo "📁 Criando pasta dist..."
+rm -rf dist
+mkdir -p dist
 
-echo "🚀 Iniciando build do plugin ${PLUGIN_NAME}..."
+# Instalar dependências de produção
+echo "📦 Instalando dependências..."
+composer install --no-dev --optimize-autoloader
 
-# Criar diretório build se não existir
-mkdir -p ${BUILD_DIR}
+# Copiar todo o conteúdo do src para dist
+echo "📋 Copiando arquivos do plugin..."
+cp -r src/* dist/
 
-# Limpar build anterior
-rm -rf ${BUILD_DIR}/${PLUGIN_NAME}
-rm -f ${OUTPUT_FILE}
+# Copiar vendor para dist
+echo "📦 Copiando dependências..."
+cp -r vendor dist/vendor
 
-# Criar estrutura do plugin
-mkdir -p ${BUILD_DIR}/${PLUGIN_NAME}
+# Criar ZIP do plugin
+echo "🗜️ Criando ZIP do plugin..."
+cd dist
+zip -r ../wp-associates-v2.7.zip . -x "*.DS_Store" "*.git*"
 
-echo "📦 Copiando arquivos do plugin..."
+cd ..
 
-# Copiar todo o conteúdo da pasta src
-cp -r ${PROJECT_DIR}/src/* ${BUILD_DIR}/${PLUGIN_NAME}/
-
-echo "🗜️  Criando arquivo ZIP..."
-
-# Criar ZIP
-cd ${BUILD_DIR}
-zip -r ${OUTPUT_FILE} ${PLUGIN_NAME}
-cd ${PROJECT_DIR}
-
-# Limpar diretório build
-rm -rf ${BUILD_DIR}
-
-echo "✅ Plugin criado com sucesso: ${OUTPUT_FILE}"
-echo "📦 Pronto para instalar no WordPress!"
+echo "✅ Plugin pronto para distribuição:"
+echo "   📁 Pasta: dist/"
+echo "   📦 ZIP: wp-associates-v2.7.zip"
