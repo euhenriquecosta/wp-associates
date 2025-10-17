@@ -21,6 +21,7 @@
     "start": "docker compose up -d",
     "stop": "docker compose down",
     "clean": "docker compose down -v",
+    "clean:build": "rm -rf dist && rm -rf build && sleep 1 && echo '📁 Pasta dist e build limpas'",
     "restart": "docker compose restart",
     "logs": "docker compose logs -f wordpress"
   }
