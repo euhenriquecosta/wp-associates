@@ -65,7 +65,7 @@ class Shortcode {
      * Renderiza o shortcode
      */
     public function render_shortcode($atts) {
-        // Garantir que os estilos sejam carregados
+        // Carregar CSS e JS necessários
         $this->enqueue_required_assets();
         
         ob_start();
@@ -92,6 +92,7 @@ class Shortcode {
         return ob_get_clean();
     }
     
+    
     /**
      * Enfileira os assets necessários para o shortcode
      */
@@ -100,17 +101,13 @@ class Shortcode {
         wp_enqueue_style('leaflet-css', 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css', array(), '1.9.4');
         wp_enqueue_script('leaflet-js', 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js', array(), '1.9.4', true);
         
-        // CSS do plugin
-        $plugin = Plugin::get_instance();
-        $css_file = $plugin->get_plugin_path() . 'styles.css';
-        if (file_exists($css_file)) {
-            wp_enqueue_style(
-                'wp-associates-css',
-                $plugin->get_plugin_url() . 'styles.css',
-                array(),
-                filemtime($css_file)
-            );
-        }
+        // CSS do plugin - usar caminho correto
+        wp_enqueue_style(
+            'wp-associates-css',
+            WPA_PLUGIN_URL . '/styles.css',
+            array(),
+            '2.7'
+        );
     }
     
     /**
